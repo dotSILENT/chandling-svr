@@ -1,12 +1,5 @@
 #include "BitStream.h"
 
-struct PlayerID
-{
-	unsigned int binaryAddress;
-	unsigned short port;
-};
-
-
 /// These enumerations are used to describe when packets are delivered.
 enum PacketPriority
 {
@@ -29,6 +22,13 @@ enum PacketReliability
 };
 
 #pragma pack(push, 1)
+
+struct PlayerID
+{
+	unsigned int binaryAddress;
+	unsigned short port;
+};
+
 /// All RPC functions have the same parameter list - this structure.
 struct RPCParameters
 {

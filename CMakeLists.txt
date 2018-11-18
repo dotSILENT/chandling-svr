@@ -25,6 +25,7 @@ add_samp_plugin(chandlingsvr
   utils.h
   raknet.h
   PacketEnum.h
+  Actions.h
   chandlingsvr.cpp
   chandlingsvr.def
   sampgdk.c
