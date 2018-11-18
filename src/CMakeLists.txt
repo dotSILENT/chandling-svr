@@ -22,16 +22,25 @@ set(LIB_RAKNET
   "${LIB_DIR}/raknet/BitStream.cpp"
 )
  
- set(LIB_SUBHOOK
+set(LIB_SUBHOOK
   "${LIB_DIR}/subhook/subhook.h"
   "${LIB_DIR}/subhook/subhook.c"
 )
 
+SET(LIB_SAMPSDK
+  "${SAMPSDK_DIR}/plugincommon.h"
+  "${SAMPSDK_DIR}/amx/amx.h"
+  "${SAMPSDK_DIR}/amxplugin.cpp"
+)
+
 add_samp_plugin(chandlingsvr
   ${PROJECT_SOURCE_DIR}/chandlingsvr.def
+  ${LIB_SAMPSDK}
   ${LIB_SAMPGDK}
   ${LIB_RAKNET}
   ${LIB_SUBHOOK}
+  CPlayer.cpp
+  CPlayer.h
   Hooks.cpp
   Hooks.h
   utils.h
@@ -43,3 +52,4 @@ add_samp_plugin(chandlingsvr
 source_group("lib\\sampgdk" FILES ${LIB_SAMPGDK})
 source_group("lib\\subhook" FILES ${LIB_SUBHOOK})
 source_group("lib\\raknet" FILES ${LIB_RAKNET})
+source_group("lib\\samp-plugin-sdk" FILES ${LIB_SAMPSDK})

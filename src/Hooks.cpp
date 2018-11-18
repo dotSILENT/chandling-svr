@@ -21,19 +21,6 @@ SubHook shGetPacketID;
 
 typedef BYTE(__cdecl *GetPacketID_t)(Packet* p);
 
-
-BYTE GetPacketID(Packet *p)
-{
-	if (p == 0) return 255;
-
-	if ((unsigned char)p->data[0] == 36)
-	{
-		//assert(p->length > sizeof(unsigned char) + sizeof(unsigned long));
-		return (unsigned char)p->data[sizeof(unsigned char) + sizeof(unsigned long)];
-	}
-	else return (unsigned char)p->data[0];
-}
-
 BYTE __cdecl hookedGetPacketID(Packet* p)
 {
 	SubHook::ScopedRemove remove(&shGetPacketID);
@@ -64,7 +51,6 @@ bool InstallHooks()
 {
 #ifdef _WIN32
 	FUNC_GetPacketID = FindPattern("\x8B\x44\x24\x04\x85\xC0\x75\x03\x0C\xFF\xC3", "xxxxxxx???x");
-	sampgdk::logprintf("getpacketid 0x%x", FUNC_GetPacketID);
 #else
 	FUNC_GetPacketID = FindPattern("\x55\xB8\x00\x00\x00\x00\x89\xE5\x8B\x55\x00\x85\xD2", "xx????xxxx?xx");
 #endif

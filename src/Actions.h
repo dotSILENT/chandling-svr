@@ -1,5 +1,6 @@
 #include "raknet\BitStream.h"
 #include "sampgdk\sampgdk.h"
+#include "CPlayer.h"
 
 enum CHandlingAction
 {
@@ -16,7 +17,12 @@ namespace Actions
 		switch (id)
 		{
 		case ACTION_INIT:
-			sampgdk::logprintf("[chandling] Player %d reports having chandling plugin", playerid);
+			if (IS_VALID_PLAYERID(playerid))
+			{
+				sampgdk::logprintf("[chandling] Player %d reports having chandling plugin", playerid);
+				gPlayers[playerid].setHasCHandling();
+			}
+
 			return true;
 		}
 		return false;
