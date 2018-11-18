@@ -1,7 +1,6 @@
-#include "sampgdk.h"
-#include "plugincommon.h"
-#include "raknet.h"
-#include "BitStream.h"
+#include "sampgdk/sampgdk.h"
+#include "samp-plugin-sdk/plugincommon.h"
+#include "raknet/raknet.h"
 #include "Hooks.h"
 
 using sampgdk::logprintf;

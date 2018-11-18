@@ -1,5 +1,5 @@
-#include "BitStream.h"
-#include "sampgdk.h"
+#include "raknet\BitStream.h"
+#include "sampgdk\sampgdk.h"
 
 enum CHandlingAction
 {

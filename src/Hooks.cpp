@@ -1,8 +1,8 @@
 #include "Hooks.h"
 #include "utils.h"
-#include "raknet.h"
-#include "sampgdk.h"
-#include "subhook/subhook.h"
+#include "sampgdk\sampgdk.h"
+#include "subhook\subhook.h"
+#include "raknet\raknet.h"
 #include "PacketEnum.h"
 #include "Actions.h"
 
