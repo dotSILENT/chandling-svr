@@ -1,3 +1,4 @@
+#include "sampgdk\sampgdk.h"
 #include "samp-plugin-sdk\amx\amx.h"
 
 

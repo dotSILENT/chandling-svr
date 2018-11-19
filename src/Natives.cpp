@@ -1,5 +1,4 @@
 #include "Natives.h"
-#include "sampgdk\sampgdk.h"
 #include "CPlayer.h"
 #include "HandlingEnum.h"
 

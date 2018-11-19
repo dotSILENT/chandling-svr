@@ -1,3 +1,8 @@
+/*
+* GetPacketID hook code together with FindPattern for windows & linux was taken from Whitetiger's ACV2
+* https://github.com/Whitetigerswt/SAMP_AC_v2
+*
+*/
 #ifdef _WIN32
 #include <Windows.h>
 #include <Psapi.h>

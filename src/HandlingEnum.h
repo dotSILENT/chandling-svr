@@ -30,7 +30,7 @@ enum CHandlingAttrib
 	HANDL_FSUSPENSIONANTIDIVEMULT,	// g
 	HANDL_FSEATOFFSETDISTANCE,	// aa
 	HANDL_FCOLLISIONDAMAGEMULT,	// ab
-	HANDL_NMONETARYVALUE,	// ac
+	HANDL_IMONETARYVALUE,	// ac
 	HANDL_MODELFLAGS,	// af
 	HANDL_HANDLINGFLAGS,	// ag
 	HANDL_FRONTLIGHTS,	// ah
@@ -86,10 +86,12 @@ CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute)
 			return TYPE_BYTE;
 
 		case HANDL_IDENTIFIER:
+		case HANDL_IMONETARYVALUE:
 			return TYPE_INT;
 
 		case HANDL_HANDLINGFLAGS:
 		case HANDL_MODELFLAGS:
 			return TYPE_FLAG;
 	}
+	return TYPE_NONE;
 }
