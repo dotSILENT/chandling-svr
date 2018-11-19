@@ -1,30 +1,21 @@
-#include "raknet\BitStream.h"
-#include "sampgdk\sampgdk.h"
+#pragma once
+
+#include "raknet/BitStream.h"
+#include "sampgdk/sampgdk.h"
 #include "CPlayer.h"
 
-enum CHandlingAction
+// action identifier is sent as single byte
+enum CHandlingAction : unsigned char
 {
 	ACTION_INIT = 10, // This is the only packet that is sent  by the player, to indicate that we can speak to him
-	
-	ACTION_SET_VEHICLE_HANDLING = 15,
-	ACTION_SET_MODEL_HANDLING = 20
+
+	ACTION_RESET_MODEL = 15,
+	ACTION_RESET_VEHICLE,
+	ACTION_SET_VEHICLE_HANDLING,
+	ACTION_SET_MODEL_HANDLING
 };
 
 namespace Actions
 {
-	bool Process(CHandlingAction id, RakNet::BitStream *bs, int playerid)
-	{
-		switch (id)
-		{
-		case ACTION_INIT:
-			if (IS_VALID_PLAYERID(playerid))
-			{
-				sampgdk::logprintf("[chandling] Player %d reports having chandling plugin", playerid);
-				gPlayers[playerid].setHasCHandling();
-			}
-
-			return true;
-		}
-		return false;
-	}
+	bool Process(CHandlingAction id, RakNet::BitStream *bs, int playerid);
 }

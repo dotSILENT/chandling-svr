@@ -1,5 +1,6 @@
-#include "sampgdk\sampgdk.h"
-#include "samp-plugin-sdk\amx\amx.h"
+#pragma once
+#include "sampgdk/sampgdk.h"
+#include "samp-plugin-sdk/amx/amx.h"
 
 
 #define CHECK_PARAMS(m, n) \

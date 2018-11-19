@@ -1,17 +1,12 @@
 #include "Hooks.h"
 #include "utils.h"
-#include "sampgdk\sampgdk.h"
-#include "subhook\subhook.h"
-#include "raknet\raknet.h"
+#include "sampgdk/sampgdk.h"
+#include "subhook/subhook.h"
+#include "raknet/raknet.h"
 #include "PacketEnum.h"
 #include "Actions.h"
+#include <cstdint>
 
-#ifdef _WIN32
-#include <Windows.h>
-#else
-typedef unsigned long DWORD;
-#define NULL 0;
-#endif
 
 DWORD FUNC_GetPacketID = NULL;
 

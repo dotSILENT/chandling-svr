@@ -1,18 +1,20 @@
-#include "sampgdk\sampgdk.h"
-#include "samp-plugin-sdk\plugincommon.h"
-#include "samp-plugin-sdk\amx\amx.h"
-#include "raknet\raknet.h"
+#include "chandlingsvr.h"
+
+#include "sampgdk/sampgdk.h"
+#include "samp-plugin-sdk/plugincommon.h"
+#include "samp-plugin-sdk/amx/amx.h"
 #include "Hooks.h"
 #include "CPlayer.h"
 #include "Natives.h"
 
-
 extern void *pAMXFunctions;
+void **ppPluginData = nullptr;
 
 using sampgdk::logprintf;
 
-void **ppPluginData = nullptr;
 CCRakServer *pRakServer = nullptr;
+
+bool bInitialized = false;
 bool bGotRakSvr = false;
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnIncomingConnection(int playerid, const char* ip_addr, int port)
@@ -31,7 +33,7 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamIn(int vehicleid, int forplayerid)
 {
 	logprintf("[chandling] OnVehicleStreamIn(%d,%d)", vehicleid, forplayerid);
 
-	if (IS_VALID_PLAYERID(forplayerid))
+	if (bInitialized && IS_VALID_PLAYERID(forplayerid))
 	{
 		// Send handling modifications for this vehicle
 
@@ -63,19 +65,22 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
-	if (!bGotRakSvr)
+	if (!bInitialized)
 	{
 		// Get pRakServer, taken from SKY
 		int(*pfn_GetRakServer)(void) = (int(*)(void))ppPluginData[PLUGIN_DATA_RAKSERVER];
 		pRakServer = (CCRakServer*)pfn_GetRakServer();
 
 		if (!pRakServer)
-			logprintf("[chandling] pRakServer is null");
+			logprintf("[chandling] [ERROR] pRakServer is null, plugin couldn't be initialized");
 		else
-			logprintf("[chandling] pRakServer 0x%x", (int)pRakServer);
-		bGotRakSvr = true;
+		{
+			bInitialized = InstallHooks();
 
-		InstallHooks();
+			if (!bInitialized)
+				logprintf("[chandling] ERROR: Plugin couldn't be initialized");
+		}
+
 	}
 
 	return amx_Register(amx, Natives::PluginNatives, -1);

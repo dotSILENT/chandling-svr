@@ -45,11 +45,17 @@ add_samp_plugin(chandlingsvr
   Natives.h
   Hooks.cpp
   Hooks.h
+  Actions.cpp
+  Actions.h
+  HandlingEnum.cpp
+  HandlingEnum.h
+  HandlingManager.cpp
+  HandlingManager.h
+  HandlingStruct.h
   utils.h
   PacketEnum.h
-  Actions.h
-  HandlingEnum.h
   chandlingsvr.cpp
+  chandlingsvr.h
 )
 
 source_group("lib\\sampgdk" FILES ${LIB_SAMPGDK})

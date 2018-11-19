@@ -1,3 +1,5 @@
+#pragma once
+
 #include "BitStream.h"
 
 /// These enumerations are used to describe when packets are delivered.

@@ -3,6 +3,8 @@
 * https://github.com/Whitetigerswt/SAMP_AC_v2
 *
 */
+#pragma once
+
 #ifdef _WIN32
 #include <Windows.h>
 #include <Psapi.h>

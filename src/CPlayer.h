@@ -1,3 +1,5 @@
+#pragma once
+
 #ifndef MAX_PLAYERS
 #define MAX_PLAYERS 1000
 #endif
