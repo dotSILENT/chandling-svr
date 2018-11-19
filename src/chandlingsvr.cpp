@@ -4,15 +4,10 @@
 #include "raknet\raknet.h"
 #include "Hooks.h"
 #include "CPlayer.h"
+#include "Natives.h"
 
 
 extern void *pAMXFunctions;
-#define CHECK_PARAMS(m, n) \
-	if (params[0] != (m * 4)) \
-		{ \
-		logprintf("[chandling] %s: Expecting %d parameter(s), but found %d", n, m, params[0] / 4); \
-		return 0; \
-	}
 
 using sampgdk::logprintf;
 
@@ -66,22 +61,6 @@ PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
 }
 
 
-// forward SetVehicleHandlingFloat(vehicleid, E_HANDLING:type, Float:value);
-cell AMX_NATIVE_CALL n_SetVehicleHandlingFloat(AMX* amx, cell* params)
-{
-	CHECK_PARAMS(3, "SetVehicleHandlingFloat");
-	logprintf("SetVehicleHandling()");
-
-
-	return 1;
-}
-
-AMX_NATIVE_INFO PluginNatives[] =
-{
-	{ "SetVehicleHandlingFloat", n_SetVehicleHandlingFloat },
-	{ 0, 0 }
-};
-
 PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 {
 	if (!bGotRakSvr)
@@ -98,7 +77,8 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 
 		InstallHooks();
 	}
-	return amx_Register(amx, PluginNatives, -1);
+
+	return amx_Register(amx, Natives::PluginNatives, -1);
 }
 
 PLUGIN_EXPORT int PLUGIN_CALL AmxUnload(AMX* amx)

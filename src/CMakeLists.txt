@@ -41,11 +41,14 @@ add_samp_plugin(chandlingsvr
   ${LIB_SUBHOOK}
   CPlayer.cpp
   CPlayer.h
+  Natives.cpp
+  Natives.h
   Hooks.cpp
   Hooks.h
   utils.h
   PacketEnum.h
   Actions.h
+  HandlingEnum.h
   chandlingsvr.cpp
 )
 
