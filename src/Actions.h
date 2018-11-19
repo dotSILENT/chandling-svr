@@ -2,7 +2,7 @@
 
 #include "raknet/BitStream.h"
 #include "sampgdk/sampgdk.h"
-#include "CPlayer.h"
+#include "PacketEnum.h"
 
 // action identifier is sent as single byte
 enum CHandlingAction : unsigned char
@@ -13,6 +13,17 @@ enum CHandlingAction : unsigned char
 	ACTION_RESET_VEHICLE,
 	ACTION_SET_VEHICLE_HANDLING,
 	ACTION_SET_MODEL_HANDLING
+};
+
+struct CHandlingActionPacket
+{
+	RakNet::BitStream data;
+
+	CHandlingActionPacket(CHandlingAction actionID)
+	{
+		data.Write((uint8_t)ID_CHANDLING);
+		data.Write((uint8_t)actionID);
+	}
 };
 
 namespace Actions

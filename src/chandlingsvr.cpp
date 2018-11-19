@@ -6,6 +6,7 @@
 #include "Hooks.h"
 #include "CPlayer.h"
 #include "Natives.h"
+#include "HandlingManager.h"
 
 extern void *pAMXFunctions;
 void **ppPluginData = nullptr;
@@ -33,10 +34,10 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamIn(int vehicleid, int forplayerid)
 {
 	logprintf("[chandling] OnVehicleStreamIn(%d,%d)", vehicleid, forplayerid);
 
-	if (bInitialized && IS_VALID_PLAYERID(forplayerid))
+	if (bInitialized)
 	{
 		// Send handling modifications for this vehicle
-
+		HandlingMgr::OnVehicleStreamIn(vehicleid, forplayerid);
 	}
 	return true;
 }
@@ -51,6 +52,9 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 
 	ppPluginData = ppData;
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
+
+	InstallNativeRedirects(pAMXFunctions);
+
 	return sampgdk::Load(ppData);
 }
 

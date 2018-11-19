@@ -10,15 +10,21 @@
 		return 0; \
 		}
 
+#define PAWN_NATIVE(funcname) \
+	cell AMX_NATIVE_CALL funcname(AMX* amx, cell* params)
+
 namespace Natives
 {
 	extern AMX_NATIVE_INFO PluginNatives[];
 
 	// native GetHandlingAttribType(CHandlingAttrib:attribute);
-	cell AMX_NATIVE_CALL n_GetHandlingAttribType(AMX* amx, cell* params);
+	PAWN_NATIVE(n_GetHandlingAttribType);
 
 	// native IsPlayerUsingCHandling(playerd);
-	cell AMX_NATIVE_CALL n_IsPlayerUsingCHandling(AMX* amx, cell* params);
+	PAWN_NATIVE(n_IsPlayerUsingCHandling);
+
+	// native ResetModelHandling(modelid);
+	PAWN_NATIVE(n_ResetModelHandling);
 	// native SetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, Float:value);
-	cell AMX_NATIVE_CALL n_SetVehicleHandlingFloat(AMX* amx, cell* params);
+	PAWN_NATIVE(n_SetVehicleHandlingFloat);
 }

@@ -23,11 +23,11 @@
 namespace HandlingMgr
 {
 
-	void	CreateVehicle(int vehicleid); // needs to be called after pawn's CreateVehicle is called in order to reset the data
-	void	OnPlayerConnect(int playerid); // call this from OnPlayerConnect so model handling modifications are sent to the player
-	void	OnVehicleStreamIn(int vehicleid, int playerid); // call from OnVehicleStreamIn so handling modifications for this individual vehicle are sent to the player
+	void	OnCreateVehicle(int vehicleid); // needs to be called after pawn's CreateVehicle is called in order to reset the data
+	void	OnPlayerConnect(int playerid); // call this from OnPlayerConnect (or rather from ACTION_INIT handler) so model handling modifications are sent to the player
+	void	OnVehicleStreamIn(int vehicleid, int forplayerid); // call from OnVehicleStreamIn so handling modifications for this individual vehicle are sent to the player
 
 	bool	ResetModelHandling(int modelid); // resets model handling to it's default one, NOTE: this resets any handling modifications for every vehicle of that model
-	bool	ResetVehicleHandling(int vehicleid); // resets vehicle handling to it's model handling (and clears the modifications)
-
+	bool	ResetVehicleHandling(int vehicleid, bool sendToPlayers=true); // resets vehicle handling to it's model handling (and clears the modifications)
+	bool	SetVehicleHandling(int vehicleid, CHandlingAttrib attrib, const float value);
 }

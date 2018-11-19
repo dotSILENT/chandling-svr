@@ -1,3 +1,4 @@
+#pragma once
 #include "Hooks.h"
 #include "utils.h"
 #include "sampgdk/sampgdk.h"
@@ -10,19 +11,23 @@
 
 DWORD FUNC_GetPacketID = NULL;
 
-SubHook shGetPacketID;
+/*
+* amx_Register hook was taken from YSF
+* https://github.com/IllidanS4/YSF/
+*/
+subhook_t amx_Register_hook;
 
 /*
  * GetPacketID hook code together with FindPattern for windows & linux was taken from Whitetiger's ACV2
  * https://github.com/Whitetigerswt/SAMP_AC_v2
  *
 */
-
+subhook::Hook shGetPacketID;
 typedef BYTE(__cdecl *GetPacketID_t)(Packet* p);
 
 BYTE __cdecl hookedGetPacketID(Packet* p)
 {
-	SubHook::ScopedRemove remove(&shGetPacketID);
+	subhook::ScopedHookRemove remove(&shGetPacketID);
 
 	BYTE ret = ((GetPacketID_t)(FUNC_GetPacketID))(p);
 	if (!p || !p->data || !p->length)
@@ -46,6 +51,33 @@ BYTE __cdecl hookedGetPacketID(Packet* p)
 	return ret;
 }
 
+/* Code taken from YSF: https://github.com/IllidanS4/YSF/ */
+typedef int(AMXAPI *t_amx_Register)(AMX *amx, AMX_NATIVE_INFO *nativelist, int number);
+int AMXAPI HOOK_amx_Register(AMX *amx, AMX_NATIVE_INFO *nativelist, int number)
+{
+	// amx_Register hook for redirect natives
+	static bool bNativesHooked = false;
+
+	if (!bNativesHooked)
+	{
+		for (int i = 0; nativelist[i].name; i++)
+		{
+			if (!strcmp(nativelist[i].name, "CreateVehicle"))
+			{
+				bNativesHooked = true;
+				sampgdk::logprintf("CreateVehicle found at 0x%x", (int)nativelist[i].func);
+				break;
+			}
+
+			if (i == number - 1) break;
+		}
+	}
+
+	return ((t_amx_Register)subhook_get_trampoline(amx_Register_hook))(amx, nativelist, number);
+}
+
+
+/* this needs to be called from AmxLoad when rakserver already exists */
 bool InstallHooks()
 {
 #ifdef _WIN32
@@ -59,4 +91,11 @@ bool InstallHooks()
 
 	shGetPacketID.Install((void*)FUNC_GetPacketID, (void*)hookedGetPacketID);
 	return true;
+}
+
+/* This needs to be called before netgame is initialized and before sampgdk */
+void InstallNativeRedirects(void* pAMXFunctions)
+{
+	amx_Register_hook = subhook_new(reinterpret_cast<void*>(*(DWORD*)((DWORD)pAMXFunctions + (PLUGIN_AMX_EXPORT_Register * 4))), reinterpret_cast<void*>(HOOK_amx_Register), static_cast<subhook_flags_t>(NULL));
+	subhook_install(amx_Register_hook);
 }

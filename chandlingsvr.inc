@@ -65,5 +65,8 @@ enum CHandlingAttribType
 
 /* Natives list */
 native GetHandlingAttribType(CHandlingAttribType:attribute);
+
 native IsPlayerUsingCHandling(playerid);
+native ResetModelHandling(modelid);
+native ResetVehicleHandling(vehicleid);
 native SetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, Float:value);

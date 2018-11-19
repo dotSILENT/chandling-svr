@@ -1,6 +1,7 @@
 #include "Natives.h"
 #include "CPlayer.h"
 #include "HandlingEnum.h"
+#include "HandlingManager.h"
 
 using sampgdk::logprintf;
 
@@ -15,13 +16,13 @@ namespace Natives
 	};
 
 
-	cell AMX_NATIVE_CALL n_GetHandlingAttribType(AMX* amx, cell* params)
+	PAWN_NATIVE(n_GetHandlingAttribType)
 	{
 		CHECK_PARAMS(1, "GetHandlingAttribType");
-		return GetHandlingAttribType((CHandlingAttrib)((int)params[1]));
+		return (cell)GetHandlingAttribType((CHandlingAttrib)((int)params[1]));
 	}
 
-	cell AMX_NATIVE_CALL n_IsPlayerUsingCHandling(AMX* amx, cell* params)
+	PAWN_NATIVE(n_IsPlayerUsingCHandling)
 	{
 		CHECK_PARAMS(1, "IsPlayerUsingCHandling");
 
@@ -29,16 +30,29 @@ namespace Natives
 		if (IS_VALID_PLAYERID(playerid) || IsPlayerConnected(playerid))
 			return gPlayers[playerid].hasCHandling();
 		
-		return false;
+		return (cell)false;
 	}
 
 
-	cell AMX_NATIVE_CALL n_SetVehicleHandlingFloat(AMX* amx, cell* params)
+	PAWN_NATIVE(n_ResetModelHandling)
+	{
+		CHECK_PARAMS(1, "ResetModelHandling");
+
+		return (cell)HandlingMgr::ResetModelHandling((int)params[1]);
+	}
+
+	PAWN_NATIVE(n_ResetVehicleHandling)
+	{
+		CHECK_PARAMS(1, "ResetVehicleHandling");
+
+		return (cell)HandlingMgr::ResetVehicleHandling((int)params[1]);
+	}
+
+	PAWN_NATIVE(n_SetVehicleHandlingFloat)
 	{
 		CHECK_PARAMS(3, "SetVehicleHandlingFloat");
-		logprintf("SetVehicleHandling()");
 
-
-		return 1;
+		HandlingMgr::OnCreateVehicle((cell)params[1]); // just for testing
+		return (cell)HandlingMgr::SetVehicleHandling((int)params[1], (CHandlingAttrib)params[2], amx_ctof(params[3]));
 	}
 }
