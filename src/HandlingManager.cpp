@@ -49,6 +49,7 @@ namespace HandlingMgr
 		for (auto const &i : entry.handlingModMap)
 		{
 			bs->Write((uint8_t)i.first);
+			bs->Write((uint8_t)i.second.type);
 			switch (i.second.type)
 			{
 			case TYPE_BYTE:
@@ -154,7 +155,7 @@ namespace HandlingMgr
 
 	/* 
 	 * Resets the handling of specified vehicle to it's model handling (only if needed)
-	 * sendToPlayers is true by default, use it only when resetting model handling
+	 * sendToPlayers is true by default, set it to false only when resetting model handling
 	*/
 	bool ResetVehicleHandling(int vehicleid, bool sendToPlayers)
 	{
@@ -169,25 +170,19 @@ namespace HandlingMgr
 		vehicleHandlings[vehicleid].modelHandling = &modelHandlings[VEHICLE_MODEL_INDEX(modelid)];
 		vehicleHandlings[vehicleid].usesModelHandling = true;
 
-		// transmit the reset action to all players who have this vehicle  streamed in (or maybe just broadcast?)
 		// use sendToPlayers = false when resetting model handling, client code can handle it on his own
 		if (sendToPlayers)
 		{
 			struct CHandlingActionPacket p(ACTION_RESET_VEHICLE);
 			p.data.Write(vehicleid);
 
-			for (int i = 0, j = GetPlayerPoolSize(); i <= j && i < MAX_PLAYERS; i++)
-			{
-				if (IsVehicleStreamedIn(vehicleid, i) && gPlayers[i].hasCHandling())
-				{
-					pRakServer->Send(&p.data, HIGH_PRIORITY, RELIABLE, 0, pRakServer->GetPlayerIDFromIndex(i), false);
-				}
-			}
+			pRakServer->Send(&p.data, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_PLAYER_ID, true);
 		}
 		return true;
 	}
 
 
+	/* SET HANDLING FUNCTIONS */
 
 	bool SetVehicleHandling(int vehicleid, CHandlingAttrib attrib, const float value)
 	{
@@ -196,6 +191,7 @@ namespace HandlingMgr
 
 		struct stHandlingMod mod;
 		mod.fval = value;
+		mod.type = TYPE_FLOAT;
 
 		__AddVehicleHandlingMod(&vehicleHandlings[vehicleid], attrib, mod);
 

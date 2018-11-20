@@ -26,13 +26,13 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnIncomingConnection(int playerid, const char* ip
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
-	logprintf("[chandling] OnPlayerConnect");
+	//logprintf("[chandling] OnPlayerConnect");
 	return true;
 }
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnVehicleStreamIn(int vehicleid, int forplayerid)
 {
-	logprintf("[chandling] OnVehicleStreamIn(%d,%d)", vehicleid, forplayerid);
+	//logprintf("[chandling] OnVehicleStreamIn(%d,%d)", vehicleid, forplayerid);
 
 	if (bInitialized)
 	{
@@ -53,12 +53,14 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 	ppPluginData = ppData;
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
 
-	InstallNativeRedirects(pAMXFunctions);
+	bool ret = sampgdk::Load(ppData);
+	Hooks::InstallNativeRedirects(pAMXFunctions);
 
-	return sampgdk::Load(ppData);
+	return ret;
 }
 
 PLUGIN_EXPORT void PLUGIN_CALL Unload() {
+	Hooks::UninstallHooks();
 	sampgdk::Unload();
 }
 
@@ -79,12 +81,11 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 			logprintf("[chandling] [ERROR] pRakServer is null, plugin couldn't be initialized");
 		else
 		{
-			bInitialized = InstallHooks();
+			bInitialized = Hooks::InstallHooks();
 
 			if (!bInitialized)
 				logprintf("[chandling] ERROR: Plugin couldn't be initialized");
 		}
-
 	}
 
 	return amx_Register(amx, Natives::PluginNatives, -1);

@@ -48,3 +48,16 @@ CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute)
 	}
 	return TYPE_NONE;
 }
+
+bool CanSetHandlingAttrib(CHandlingAttrib attribute)
+{
+	switch (attribute)
+	{
+	case HANDL_IDENTIFIER:
+	case HANDL_ANIMGROUP:
+	case HANDL_IMONETARYVALUE:
+		return false;
+
+	}
+	return true;
+}

@@ -50,3 +50,4 @@ enum CHandlingAttribType
 };
 
 CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute);
+bool CanSetHandlingAttrib(CHandlingAttrib attribute);

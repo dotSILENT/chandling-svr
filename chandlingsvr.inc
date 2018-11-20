@@ -64,7 +64,7 @@ enum CHandlingAttribType
 };
 
 /* Natives list */
-native GetHandlingAttribType(CHandlingAttribType:attribute);
+native CHandlingAttribType:GetHandlingAttribType(CHandlingAttrib:attribute);
 
 native IsPlayerUsingCHandling(playerid);
 native ResetModelHandling(modelid);

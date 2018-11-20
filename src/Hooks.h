@@ -1,3 +1,7 @@
 
-bool InstallHooks();
-void InstallNativeRedirects(void* pAMXFunctions);
+namespace Hooks
+{
+	bool InstallHooks();
+	void InstallNativeRedirects(void* pAMXFunctions);
+	void UninstallHooks();
+}

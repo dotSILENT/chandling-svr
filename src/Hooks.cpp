@@ -6,6 +6,7 @@
 #include "raknet/raknet.h"
 #include "PacketEnum.h"
 #include "Actions.h"
+#include "Natives.h"
 #include <cstdint>
 
 
@@ -62,10 +63,9 @@ int AMXAPI HOOK_amx_Register(AMX *amx, AMX_NATIVE_INFO *nativelist, int number)
 	{
 		for (int i = 0; nativelist[i].name; i++)
 		{
-			if (!strcmp(nativelist[i].name, "CreateVehicle"))
+			if (ApplyNativeRedirect(nativelist[i]))
 			{
 				bNativesHooked = true;
-				sampgdk::logprintf("CreateVehicle found at 0x%x", (int)nativelist[i].func);
 				break;
 			}
 
@@ -77,25 +77,34 @@ int AMXAPI HOOK_amx_Register(AMX *amx, AMX_NATIVE_INFO *nativelist, int number)
 }
 
 
-/* this needs to be called from AmxLoad when rakserver already exists */
-bool InstallHooks()
+namespace Hooks
 {
+	/* this needs to be called from AmxLoad when rakserver already exists */
+	bool InstallHooks()
+	{
 #ifdef _WIN32
-	FUNC_GetPacketID = FindPattern("\x8B\x44\x24\x04\x85\xC0\x75\x03\x0C\xFF\xC3", "xxxxxxx???x");
+		FUNC_GetPacketID = FindPattern("\x8B\x44\x24\x04\x85\xC0\x75\x03\x0C\xFF\xC3", "xxxxxxx???x");
 #else
-	FUNC_GetPacketID = FindPattern("\x55\xB8\x00\x00\x00\x00\x89\xE5\x8B\x55\x00\x85\xD2", "xx????xxxx?xx");
+		FUNC_GetPacketID = FindPattern("\x55\xB8\x00\x00\x00\x00\x89\xE5\x8B\x55\x00\x85\xD2", "xx????xxxx?xx");
 #endif
 
-	if (FUNC_GetPacketID == 0)
-		return false;
+		if (FUNC_GetPacketID == 0)
+			return false;
 
-	shGetPacketID.Install((void*)FUNC_GetPacketID, (void*)hookedGetPacketID);
-	return true;
-}
+		shGetPacketID.Install((void*)FUNC_GetPacketID, (void*)hookedGetPacketID);
+		return true;
+	}
 
-/* This needs to be called before netgame is initialized and before sampgdk */
-void InstallNativeRedirects(void* pAMXFunctions)
-{
-	amx_Register_hook = subhook_new(reinterpret_cast<void*>(*(DWORD*)((DWORD)pAMXFunctions + (PLUGIN_AMX_EXPORT_Register * 4))), reinterpret_cast<void*>(HOOK_amx_Register), static_cast<subhook_flags_t>(NULL));
-	subhook_install(amx_Register_hook);
+	/* This needs to be called before netgame is initialized and before sampgdk */
+	void InstallNativeRedirects(void* pAMXFunctions)
+	{
+		amx_Register_hook = subhook_new(reinterpret_cast<void*>(*(DWORD*)((DWORD)pAMXFunctions + (PLUGIN_AMX_EXPORT_Register * 4))), reinterpret_cast<void*>(HOOK_amx_Register), static_cast<subhook_flags_t>(NULL));
+		subhook_install(amx_Register_hook);
+	}
+
+	void UninstallHooks()
+	{
+		subhook_remove(amx_Register_hook);
+		shGetPacketID.Remove();
+	}
 }
