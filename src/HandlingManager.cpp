@@ -1,47 +1,56 @@
-#include <unordered_map>
 #include "sampgdk/sampgdk.h"
 #include "chandlingsvr.h"
 #include "PacketEnum.h"
 #include "Actions.h"
 #include "CPlayer.h"
+#include "HandlingDefault.h"
 
 #include "HandlingManager.h"
 
+#include <unordered_map>
+#include <unordered_set>
 
-struct stHandlingMod
-{
-	CHandlingAttribType type;
-	union
-	{
-		float	fval;
-		int		ival;
-		uint8_t	bvar;
-	};
-};
-
-struct stHandlingEntry
-{
-	struct tHandlingData	handlingData;
-	std::unordered_map<CHandlingAttrib, struct stHandlingMod>	handlingModMap; // modifications are saved here so we only send things that have changed
-};
-
-struct stVehicleHandlingEntry : stHandlingEntry
-{
-	struct stHandlingEntry*	modelHandling;
-	bool usesModelHandling = true; // set to false as soon as you change any handling attribute for this vehicle
-};
-
-struct stHandlingEntry			modelHandlings[MAX_VEHICLE_MODELS];
-struct stVehicleHandlingEntry	vehicleHandlings[MAX_VEHICLES+1];
-
+#define CHECK_TYPE(attribute,type) \
+	if(GetHandlingAttribType(attrib) != type) \
+		{\
+		sampgdk::logprintf("[chandling] Invalid type (%d) specified for attribute %d", type, attrib);\
+		return false;\
+		}
 
 namespace HandlingMgr
 {
+	struct stHandlingMod
+	{
+		CHandlingAttribType type;
+		union
+		{
+			float				fval;
+			unsigned int		uival;
+			uint8_t				bvar;
+		};
+	};
+
+	struct stHandlingEntry
+	{
+		struct tHandlingData	handlingData;
+		std::unordered_map<CHandlingAttrib, struct stHandlingMod>	handlingModMap; // modifications are saved here so we only send things that have changed
+	};
+
+	struct stVehicleHandlingEntry : stHandlingEntry
+	{
+		struct stHandlingEntry*	modelHandling;
+		bool usesModelHandling = false; // set to true under OnCreateVehicle, set to false as soon as you change any handling attribute for this vehicle
+	};
+
+	struct stHandlingEntry			modelHandlings[MAX_VEHICLE_MODELS];
+	struct stVehicleHandlingEntry	vehicleHandlings[MAX_VEHICLES + 1];
+
+	std::unordered_set<uint16_t>	usOutgoingVehicleMods;
+	std::unordered_set<uint16_t>	usOutgoingModelMods;
 
 	/*
 	 *  INTERNAL FUNCTIONS
 	*/
-
 	void __WriteHandlingEntryToBitStream(RakNet::BitStream* bs, const struct stHandlingEntry entry)
 	{
 		bs->Write((uint8_t)entry.handlingModMap.size());
@@ -55,11 +64,9 @@ namespace HandlingMgr
 			case TYPE_BYTE:
 				bs->Write(i.second.bvar);
 				break;
-			case TYPE_INT:
-				bs->Write(i.second.ival);
-				break;
+			case TYPE_UINT:
 			case TYPE_FLAG:
-				bs->Write(i.second.ival);
+				bs->Write(i.second.uival);
 				break;
 			case TYPE_FLOAT:
 				bs->Write(i.second.fval);
@@ -67,21 +74,111 @@ namespace HandlingMgr
 			}
 		}
 	}
-
-	void __AddHandlingMod(struct stHandlingEntry *handling, CHandlingAttrib attribute, const struct stHandlingMod mod)
+	// dis funcion no use no no
+	void __addMod(struct stHandlingEntry *handling, CHandlingAttrib attribute, const struct stHandlingMod mod)
 	{
 		if (handling->handlingModMap.count(attribute))
 			handling->handlingModMap.at(attribute) = mod;
-		else handling->handlingModMap.insert(std::make_pair(attribute, mod));
+		else handling->handlingModMap.emplace(attribute, mod);
+
+		void* offs = GetHandlingAttribPtr(&handling->handlingData, attribute);
+		/* write the value to the handling data so we can Get it later on */
+		switch (mod.type)
+		{
+		case TYPE_FLOAT:
+			*(float*)offs = mod.fval;
+		case TYPE_UINT:
+		case TYPE_FLAG:
+			*(unsigned int*)offs = mod.uival;
+			break;
+		case TYPE_BYTE:
+			*(uint8_t*)offs = mod.bvar;
+			break;
+		}
+	}
+	
+	// dis use
+	bool __AddModelHandlingMod(uint16_t modelid, CHandlingAttrib attribute, const struct stHandlingMod mod)
+	{
+		if (!IS_VALID_VEHICLE_MODEL(modelid))
+			return false;
+		__addMod(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)], attribute, mod);
+		
+		usOutgoingModelMods.emplace(modelid);
+		return true;
 	}
 
-	void __AddVehicleHandlingMod(struct stVehicleHandlingEntry *handling, CHandlingAttrib attribute, const struct stHandlingMod mod)
+	bool __AddVehicleHandlingMod(uint16_t vehicleid, CHandlingAttrib attribute, const struct stHandlingMod mod)
 	{
-		__AddHandlingMod(handling, attribute, mod);
-		handling->usesModelHandling = false;
+		if (!IS_VALID_VEHICLEID(vehicleid))
+			return false;
+
+		// copy the handling of the model & apply the changed value
+		if (vehicleHandlings[vehicleid].usesModelHandling)
+		{
+			vehicleHandlings[vehicleid].usesModelHandling = false;
+			memcpy(&vehicleHandlings[vehicleid].handlingData, &vehicleHandlings[vehicleid].modelHandling->handlingData, sizeof(struct tHandlingData));
+		}
+		__addMod(&vehicleHandlings[vehicleid], attribute, mod);
+
+		usOutgoingVehicleMods.emplace(vehicleid);
+		return true;
 	}
 
 	/* -------------------------------------------------------------------------------------------------------------------- */
+
+
+	/* We use ProcessTick to broadcast queued modifications all at once instead of spamming with packets */
+	void ProcessTick()
+	{
+		while (!usOutgoingVehicleMods.empty())
+		{
+			const auto &it = usOutgoingVehicleMods.begin();
+			uint16_t vehicleid = *it;
+			usOutgoingVehicleMods.erase(it);
+			sampgdk::logprintf("send %d", vehicleid);
+			
+			if (!IsValidVehicle(vehicleid) || vehicleHandlings[vehicleid].usesModelHandling)
+			{
+				usOutgoingVehicleMods.clear();
+				continue;
+			}
+			sampgdk::logprintf("xxxX");
+			struct CHandlingActionPacket p(ACTION_SET_VEHICLE_HANDLING);
+			p.data.Write(vehicleid);
+			__WriteHandlingEntryToBitStream(&p.data, vehicleHandlings[vehicleid]);
+
+			pRakServer->Send(&p.data, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_PLAYER_ID, true);
+		}
+
+		while (!usOutgoingModelMods.empty())
+		{
+			const auto &it = usOutgoingModelMods.begin();
+			uint16_t modelid = *it;
+			usOutgoingModelMods.erase(it);
+
+			if (!IS_VALID_VEHICLE_MODEL(modelid) || modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingModMap.empty())
+			{
+				usOutgoingModelMods.clear();
+				continue;
+			}
+
+			struct CHandlingActionPacket p(ACTION_SET_MODEL_HANDLING);
+			p.data.Write(modelid);
+			__WriteHandlingEntryToBitStream(&p.data, modelHandlings[VEHICLE_MODEL_INDEX(modelid)]);
+
+			pRakServer->Send(&p.data, HIGH_PRIORITY, RELIABLE, 0, UNASSIGNED_PLAYER_ID, true);
+		}
+	}
+
+	// call right after HandlingDefault::Initialize()
+	void InitializeModelHandlings()
+	{
+		for (int i = 0; i < MAX_VEHICLE_MODELS; i++)
+		{
+			HandlingDefault::copyDefaultModelHandling(i + 400, &modelHandlings[i].handlingData);
+		}
+	}
 
 	void OnCreateVehicle(int vehicleid)
 	{
@@ -126,17 +223,17 @@ namespace HandlingMgr
 
 	/* 
 	 * Resets handling of specified vehicle model to it's original default one
-	 * NOTE: This also resets handlings (and handling mods) of all vehicles of this model
+	 * NOTE: This doesn't reset vehicles that have modified the model handling, these use their own (older) copy
 	*/
 	bool ResetModelHandling(int modelid)
 	{
 		int model_index = VEHICLE_MODEL_INDEX(modelid);
-		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || modelHandlings[model_index].handlingModMap.empty())
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
 			return false;
 		
 		modelHandlings[model_index].handlingModMap.clear();
 
-		// TODO: Add default handling values
+		HandlingDefault::copyDefaultModelHandling(modelid, &modelHandlings[model_index].handlingData);
 
 		for (int i = 1, j = GetVehiclePoolSize(); i < j && i <= MAX_VEHICLES; i++)
 		{
@@ -163,7 +260,7 @@ namespace HandlingMgr
 			return false;
 
 		int modelid = GetVehicleModel(vehicleid);
-		if (!IS_VALID_VEHICLEID(vehicleid) || !IS_VALID_VEHICLE_MODEL(modelid) || vehicleHandlings[vehicleid].usesModelHandling)
+		if (!IS_VALID_VEHICLEID(vehicleid) || !IS_VALID_VEHICLE_MODEL(modelid))
 			return false;
 
 		vehicleHandlings[vehicleid].handlingModMap.clear();
@@ -184,31 +281,73 @@ namespace HandlingMgr
 
 	/* SET HANDLING FUNCTIONS */
 
-	bool SetVehicleHandling(int vehicleid, CHandlingAttrib attrib, const float value)
+	bool SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid))
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
 			return false;
+		CHECK_TYPE(attrib, TYPE_FLOAT)
 
 		struct stHandlingMod mod;
 		mod.fval = value;
 		mod.type = TYPE_FLOAT;
 
-		__AddVehicleHandlingMod(&vehicleHandlings[vehicleid], attrib, mod);
+		return __AddVehicleHandlingMod(vehicleid, attrib, mod);
+	}
 
-		struct CHandlingActionPacket p(ACTION_SET_VEHICLE_HANDLING);
-		p.data.Write((uint16_t)vehicleid);
-		
-		__WriteHandlingEntryToBitStream(&p.data, vehicleHandlings[vehicleid]);
+	bool SetVehicleHandling(uint16_t  vehicleid, CHandlingAttrib attrib, unsigned int value)
+	{
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
+			return false;	
+		CHECK_TYPE(attrib, TYPE_UINT)
 
-		/* this is here just for now */
-		for (int i = 0, j = GetPlayerPoolSize(); i <= j && i < MAX_PLAYERS; i++)
-		{
-			if (IsVehicleStreamedIn(vehicleid, i))
-			{
-				pRakServer->Send(&p.data, HIGH_PRIORITY, RELIABLE, 0, pRakServer->GetPlayerIDFromIndex(i), false);
-				sampgdk::logprintf("[chandling] SetVehicleHandlingFloat(%d, %d, %f) sent to player %d", vehicleid, attrib, value, i);
-			}
-		}
+		struct stHandlingMod mod;
+		mod.uival = value;
+		mod.type = TYPE_UINT;
+		return __AddVehicleHandlingMod(vehicleid, attrib, mod);
+	}
+
+	bool SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t value)
+	{
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
+			return false;
+		CHECK_TYPE(attrib, TYPE_BYTE)
+
+		struct stHandlingMod mod;
+		mod.bvar = value;
+		mod.type = TYPE_BYTE;
+		return __AddVehicleHandlingMod(vehicleid, attrib, mod);
+	}
+
+	// TODO add flag manipulations
+
+
+	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float &ret)
+	{
+		if (!bInitialized || !IsValidVehicle(vehicleid))
+			return false;
+		CHECK_TYPE(attrib, TYPE_FLOAT)
+
+		ret = *(float*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
+		return true;
+	}
+
+	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, unsigned int &ret)
+	{
+		if (!bInitialized || !IsValidVehicle(vehicleid))
+			return false;
+		CHECK_TYPE(attrib, TYPE_UINT)
+
+		ret = *(unsigned int*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
+		return true;
+	}
+
+	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t &ret)
+	{
+		if (!bInitialized || !IsValidVehicle(vehicleid))
+			return false;
+		CHECK_TYPE(attrib, TYPE_BYTE)
+
+		ret = *(uint8_t*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
 		return true;
 	}
 }

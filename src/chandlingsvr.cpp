@@ -7,6 +7,8 @@
 #include "CPlayer.h"
 #include "Natives.h"
 #include "HandlingManager.h"
+#include "HandlingDefault.h"
+#include "HandlingEnum.h"
 
 extern void *pAMXFunctions;
 void **ppPluginData = nullptr;
@@ -48,6 +50,7 @@ PLUGIN_EXPORT unsigned int PLUGIN_CALL Supports() {
 	return sampgdk::Supports() | SUPPORTS_PROCESS_TICK | SUPPORTS_AMX_NATIVES;
 }
 
+
 PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 
 	ppPluginData = ppData;
@@ -55,7 +58,6 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 
 	bool ret = sampgdk::Load(ppData);
 	Hooks::InstallNativeRedirects(pAMXFunctions);
-
 	return ret;
 }
 
@@ -65,6 +67,8 @@ PLUGIN_EXPORT void PLUGIN_CALL Unload() {
 }
 
 PLUGIN_EXPORT void PLUGIN_CALL ProcessTick() {
+	if (bInitialized)
+		HandlingMgr::ProcessTick();
 	sampgdk::ProcessTick();
 }
 
@@ -85,6 +89,11 @@ PLUGIN_EXPORT int PLUGIN_CALL AmxLoad(AMX *amx)
 
 			if (!bInitialized)
 				logprintf("[chandling] ERROR: Plugin couldn't be initialized");
+			else
+			{
+				HandlingDefault::Initialize();
+				HandlingMgr::InitializeModelHandlings();
+			}
 		}
 	}
 

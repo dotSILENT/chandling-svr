@@ -86,18 +86,23 @@ namespace Natives
 		{ "ResetModelHandling", n_ResetModelHandling },
 		{ "ResetVehicleHandling", n_ResetVehicleHandling },
 		{ "SetVehicleHandlingFloat", n_SetVehicleHandlingFloat },
+		{ "SetVehicleHandlingInt", n_SetVehicleHandlingInt },
+		{ "SetVehicleHandlingByte", n_SetVehicleHandlingByte },
+		{ "GetVehicleHandlingFloat", n_GetVehicleHandlingFloat },
+		{ "GetVehicleHandlingInt", n_GetVehicleHandlingInt },
+		{ "GetVehicleHandlingByte", n_GetVehicleHandlingByte },
 		{ 0, 0 }
 	};
 
 	PAWN_NATIVE(n_GetHandlingAttribType)
 	{
-		CHECK_PARAMS(1, "GetHandlingAttribType");
+		CHECK_PARAMS(1, "GetHandlingAttribType")
 		return (cell)GetHandlingAttribType((CHandlingAttrib)((int)params[1]));
 	}
 
 	PAWN_NATIVE(n_IsPlayerUsingCHandling)
 	{
-		CHECK_PARAMS(1, "IsPlayerUsingCHandling");
+		CHECK_PARAMS(1, "IsPlayerUsingCHandling")
 
 		int playerid = (int)params[1];
 		if (IS_VALID_PLAYERID(playerid) || IsPlayerConnected(playerid))
@@ -109,22 +114,74 @@ namespace Natives
 
 	PAWN_NATIVE(n_ResetModelHandling)
 	{
-		CHECK_PARAMS(1, "ResetModelHandling");
+		CHECK_PARAMS(1, "ResetModelHandling")
 
 		return (cell)HandlingMgr::ResetModelHandling((int)params[1]);
 	}
 
 	PAWN_NATIVE(n_ResetVehicleHandling)
 	{
-		CHECK_PARAMS(1, "ResetVehicleHandling");
+		CHECK_PARAMS(1, "ResetVehicleHandling")
 
 		return (cell)HandlingMgr::ResetVehicleHandling((int)params[1]);
 	}
 
 	PAWN_NATIVE(n_SetVehicleHandlingFloat)
 	{
-		CHECK_PARAMS(3, "SetVehicleHandlingFloat");
+		CHECK_PARAMS(3, "SetVehicleHandlingFloat")
 
-		return (cell)HandlingMgr::SetVehicleHandling((int)params[1], (CHandlingAttrib)params[2], amx_ctof(params[3]));
+		return (cell)HandlingMgr::SetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], amx_ctof(params[3]));
+	}
+
+	PAWN_NATIVE(n_SetVehicleHandlingInt)
+	{
+		CHECK_PARAMS(3, "SetVehicleHandlingInt")
+
+		return (cell)HandlingMgr::SetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], (unsigned int)params[3]);
+	}
+
+	PAWN_NATIVE(n_SetVehicleHandlingByte)
+	{
+		CHECK_PARAMS(3, "SetVehicleHandlingInt")
+
+		return (cell)HandlingMgr::SetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], (uint8_t)params[3]);
+	}
+
+
+	PAWN_NATIVE(n_GetVehicleHandlingFloat)
+	{
+		CHECK_PARAMS(3, "GetVehicleHandlingFloat")
+
+		float val = 0.0;
+		bool ret = HandlingMgr::GetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+
+		cell* ref = NULL;
+		amx_GetAddr(amx, params[3], &ref);
+		*ref = amx_ftoc(val);
+		return (cell)ret;
+	}
+
+	PAWN_NATIVE(n_GetVehicleHandlingInt)
+	{
+		CHECK_PARAMS(3, "GetVehicleHandlingInt")
+
+		unsigned int val = 0;
+		bool ret = HandlingMgr::GetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+
+		cell* ref = NULL;
+		amx_GetAddr(amx, params[3], &ref);
+		*ref = (cell)val;
+		return (cell)ret;
+	}
+
+	PAWN_NATIVE(n_GetVehicleHandlingByte)
+	{
+		uint8_t val = 0;
+		bool ret = HandlingMgr::GetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+
+		cell* ref = NULL;
+		amx_GetAddr(amx, params[3], &ref);
+		*ref = (cell)val;
+		return (cell)ret;
 	}
 }

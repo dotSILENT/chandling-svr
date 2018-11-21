@@ -108,9 +108,9 @@ enum eVehicleHandlingModelFlags : unsigned int {
 
 struct CVector
 {
-	float X;
-	float Y;
-	float Z;
+	float fX;
+	float fY;
+	float fZ;
 };
 
 struct tHandlingData {

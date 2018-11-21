@@ -45,4 +45,15 @@ namespace Natives
 	PAWN_NATIVE(n_ResetVehicleHandling);
 	// native SetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, Float:value);
 	PAWN_NATIVE(n_SetVehicleHandlingFloat);
+	// native SetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, value);
+	PAWN_NATIVE(n_SetVehicleHandlingInt);
+	// native  SetVehicleHandlingByte(vehicleid, CHandlingAttrib:attribute, value);
+	PAWN_NATIVE(n_SetVehicleHandlingByte);
+	
+	// native GetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, &Float:value);
+	PAWN_NATIVE(n_GetVehicleHandlingFloat);
+	// native GetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, &value);
+	PAWN_NATIVE(n_GetVehicleHandlingInt);
+	// native GetVehicleHandlingByte(vehicleid, CHandlingAttrib:attribute, &value);
+	PAWN_NATIVE(n_GetVehicleHandlingByte);
 }

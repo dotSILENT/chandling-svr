@@ -51,6 +51,8 @@ add_samp_plugin(chandlingsvr
   HandlingEnum.h
   HandlingManager.cpp
   HandlingManager.h
+  HandlingDefault.cpp
+  HandlingDefault.h
   HandlingStruct.h
   utils.h
   PacketEnum.h

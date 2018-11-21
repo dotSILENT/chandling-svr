@@ -2,7 +2,7 @@
 
 enum CHandlingAttrib
 {
-	HANDL_IDENTIFIER = 1, // A
+	HANDL_UIDENTIFIER = 1, // A
 	HANDL_FMASS,	// B
 	HANDL_FTURNMASS, // c
 	HANDL_FDRAGMULTIPLIER, // D
@@ -32,7 +32,7 @@ enum CHandlingAttrib
 	HANDL_FSUSPENSIONANTIDIVEMULT,	// g
 	HANDL_FSEATOFFSETDISTANCE,	// aa
 	HANDL_FCOLLISIONDAMAGEMULT,	// ab
-	HANDL_IMONETARYVALUE,	// ac
+	HANDL_UIMONETARYVALUE,	// ac
 	HANDL_MODELFLAGS,	// af
 	HANDL_HANDLINGFLAGS,	// ag
 	HANDL_FRONTLIGHTS,	// ah
@@ -43,7 +43,7 @@ enum CHandlingAttrib
 enum CHandlingAttribType
 {
 	TYPE_NONE,
-	TYPE_INT,
+	TYPE_UINT,
 	TYPE_FLOAT,
 	TYPE_BYTE,
 	TYPE_FLAG
@@ -51,3 +51,5 @@ enum CHandlingAttribType
 
 CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute);
 bool CanSetHandlingAttrib(CHandlingAttrib attribute);
+
+void* GetHandlingAttribPtr(struct tHandlingData *handling, CHandlingAttrib attrib);
