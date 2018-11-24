@@ -26,7 +26,7 @@ namespace HandlingMgr
 		{
 			float				fval;
 			unsigned int		uival;
-			uint8_t				bvar;
+			uint8_t				bval;
 		};
 	};
 
@@ -57,12 +57,12 @@ namespace HandlingMgr
 
 		for (auto const &i : entry.handlingModMap)
 		{
-			bs->Write((uint8_t)i.first);
+			bs->Write((uint8_t)i.first); // attribute
 			bs->Write((uint8_t)i.second.type);
 			switch (i.second.type)
 			{
 			case TYPE_BYTE:
-				bs->Write(i.second.bvar);
+				bs->Write(i.second.bval);
 				break;
 			case TYPE_UINT:
 			case TYPE_FLAG:
@@ -92,7 +92,7 @@ namespace HandlingMgr
 			*(unsigned int*)offs = mod.uival;
 			break;
 		case TYPE_BYTE:
-			*(uint8_t*)offs = mod.bvar;
+			*(uint8_t*)offs = mod.bval;
 			break;
 		}
 	}
@@ -136,14 +136,12 @@ namespace HandlingMgr
 			const auto &it = usOutgoingVehicleMods.begin();
 			uint16_t vehicleid = *it;
 			usOutgoingVehicleMods.erase(it);
-			sampgdk::logprintf("send %d", vehicleid);
 			
 			if (!IsValidVehicle(vehicleid) || vehicleHandlings[vehicleid].usesModelHandling)
 			{
 				usOutgoingVehicleMods.clear();
 				continue;
 			}
-			sampgdk::logprintf("xxxX");
 			struct CHandlingActionPacket p(ACTION_SET_VEHICLE_HANDLING);
 			p.data.Write(vehicleid);
 			__WriteHandlingEntryToBitStream(&p.data, vehicleHandlings[vehicleid]);
@@ -313,7 +311,7 @@ namespace HandlingMgr
 		CHECK_TYPE(attrib, TYPE_BYTE)
 
 		struct stHandlingMod mod;
-		mod.bvar = value;
+		mod.bval = value;
 		mod.type = TYPE_BYTE;
 		return __AddVehicleHandlingMod(vehicleid, attrib, mod);
 	}
