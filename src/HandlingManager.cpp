@@ -281,9 +281,9 @@ namespace HandlingMgr
 
 	bool SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
 			return false;
-		CHECK_TYPE(attrib, TYPE_FLOAT)
+		//CHECK_TYPE(attrib, TYPE_FLOAT) // IsValidHandlingValue takes care of this
 
 		struct stHandlingMod mod;
 		mod.fval = value;
@@ -294,7 +294,7 @@ namespace HandlingMgr
 
 	bool SetVehicleHandling(uint16_t  vehicleid, CHandlingAttrib attrib, unsigned int value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib)) // no checking for unsigned integers
 			return false;	
 		CHECK_TYPE(attrib, TYPE_UINT)
 
@@ -306,9 +306,9 @@ namespace HandlingMgr
 
 	bool SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
 			return false;
-		CHECK_TYPE(attrib, TYPE_BYTE)
+		//CHECK_TYPE(attrib, TYPE_BYTE) // IsValidHandlingValue takes care of this
 
 		struct stHandlingMod mod;
 		mod.bval = value;

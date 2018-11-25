@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 enum CHandlingAttrib
 {
@@ -40,6 +41,15 @@ enum CHandlingAttrib
 	HANDL_ANIMGROUP	 // aj
 };
 
+/* uncomment in pawn
+enum CHandlingLights : unsigned char 
+{
+	LIGHTS_LONG,
+	LIGHTS_SMALL,
+	LIGHTS_BIG,
+	LIGHTS_TALL
+};*/
+
 enum CHandlingAttribType
 {
 	TYPE_NONE,
@@ -51,5 +61,9 @@ enum CHandlingAttribType
 
 CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute);
 bool CanSetHandlingAttrib(CHandlingAttrib attribute);
+
+bool IsValidHandlingValue(CHandlingAttrib attribute, float value);
+bool IsValidHandlingValue(CHandlingAttrib attribute, uint8_t value);
+//bool IsValidHandlingValue(CHandlingAttrib attribute, unsigned int value); // not really needed
 
 void* GetHandlingAttribPtr(struct tHandlingData *handling, CHandlingAttrib attrib);

@@ -10,7 +10,7 @@
 	(id >= 1 && id <= MAX_VEHICLES)
 
 #define IS_VALID_VEHICLE_MODEL(modelid) \
-	(modelid > 400 && modelid < MAX_VEHICLE_MODELS+400)
+	(modelid >= 400 && modelid < MAX_VEHICLE_MODELS+400)
 
 #define VEHICLE_MODEL_INDEX(modelid) \
 	(modelid - 400)

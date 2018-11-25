@@ -53,6 +53,13 @@ enum CHandlingAttrib
 	HANDL_ANIMGROUP	 // aj
 };
 
+enum CHandlingLights
+{
+	LIGHTS_LONG,
+	LIGHTS_SMALL,
+	LIGHTS_BIG,
+	LIGHTS_TALL
+};
 
 enum CHandlingAttribType
 {
