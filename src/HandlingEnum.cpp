@@ -110,7 +110,7 @@ bool IsValidHandlingValue(CHandlingAttrib attribute, float value)
 	case HANDL_FSUSPENSIONANTIDIVEMULT:
 		return 0.0 <= value && value <= 30.0;
 	case HANDL_FSEATOFFSETDISTANCE:
-		return - 20.0 <= value && value <= 20.0;
+		return -20.0 <= value && value <= 20.0;
 	case HANDL_FCOLLISIONDAMAGEMULT:
 		return 0.0 <= value && value <= 10.0;
 	}
