@@ -1,14 +1,7 @@
 #pragma once
 #include "sampgdk/sampgdk.h"
-#include "samp-plugin-sdk/amx/amx.h"
+//#include "samp-plugin-sdk/amx/amx.h"
 
-
-#define CHECK_PARAMS(m, n) \
-	if (params[0] != (m * 4)) \
-			{ \
-		logprintf("[chandling] %s: Expecting %d parameter(s), but found %d", n, m, params[0] / 4); \
-		return 0; \
-		}
 
 #define PAWN_NATIVE(funcname) \
 	cell AMX_NATIVE_CALL funcname(AMX* amx, cell* params)
@@ -47,13 +40,19 @@ namespace Natives
 	PAWN_NATIVE(n_SetVehicleHandlingFloat);
 	// native SetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, value);
 	PAWN_NATIVE(n_SetVehicleHandlingInt);
-	/* native  SetVehicleHandlingByte(vehicleid, CHandlingAttrib:attribute, value);
-	PAWN_NATIVE(n_SetVehicleHandlingByte);*/
+	
+	// native SetModelHandlingFloat(modelid, CHandlingAttrib:attribute, Float:value);
+	PAWN_NATIVE(n_SetModelHandlingFloat);
+	// native SetModelHandlingInt(modelid, CHandlingAttrib:attribute, value);
+	PAWN_NATIVE(n_SetModelHandlingInt);
 	
 	// native GetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, &Float:value);
 	PAWN_NATIVE(n_GetVehicleHandlingFloat);
 	// native GetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, &value);
 	PAWN_NATIVE(n_GetVehicleHandlingInt);
-	/* native GetVehicleHandlingByte(vehicleid, CHandlingAttrib:attribute, &value);
-	PAWN_NATIVE(n_GetVehicleHandlingByte);*/
+	
+	// native GetModelHandlingFloat(modelid, CHandlingAttrib:attribute, &Float:value);
+	PAWN_NATIVE(n_GetModelHandlingFloat);
+	// native GetModelHandlingInt(modelid, CHandlingAttrib:attribute, &value);
+	PAWN_NATIVE(n_GetModelHandlingInt);
 }

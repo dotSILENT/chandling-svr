@@ -233,14 +233,6 @@ namespace HandlingMgr
 
 		HandlingDefault::copyDefaultModelHandling(modelid, &modelHandlings[model_index].handlingData);
 
-		for (int i = 1, j = GetVehiclePoolSize(); i < j && i <= MAX_VEHICLES; i++)
-		{
-			if (!vehicleHandlings[i].usesModelHandling && vehicleHandlings[i].modelHandling == &modelHandlings[model_index] && !vehicleHandlings[i].handlingModMap.empty())
-			{
-				ResetVehicleHandling(i, false); // we don't need to send this packet for every player, because client code handles it on his own when receiving ACTION_RESET_MODEL
-			}
-		}
-
 		struct CHandlingActionPacket p(ACTION_RESET_MODEL);
 		p.data.Write((uint16_t)modelid);
 		// this needs to be announced to every player
@@ -294,7 +286,7 @@ namespace HandlingMgr
 
 	bool SetVehicleHandling(uint16_t  vehicleid, CHandlingAttrib attrib, unsigned int value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib)) // no checking for unsigned integers
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib)) // no validation checking for unsigned integers
 			return false;	
 		CHECK_TYPE(attrib, TYPE_UINT)
 
@@ -316,8 +308,41 @@ namespace HandlingMgr
 		return __AddVehicleHandlingMod(vehicleid, attrib, mod);
 	}
 
-	// TODO add flag manipulations
+	bool SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float value)
+	{
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
+			return false;
 
+		struct stHandlingMod mod;
+		mod.fval = value;
+		mod.type = TYPE_FLOAT;
+		return __AddModelHandlingMod(modelid, attrib, mod);
+	}
+
+	bool SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int value)
+	{
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib))
+			return false;
+		CHECK_TYPE(attrib, TYPE_UINT)
+
+		struct stHandlingMod mod;
+		mod.uival = value;
+		mod.type = TYPE_UINT;
+		return __AddModelHandlingMod(modelid, attrib, mod);
+	}
+
+	bool SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t value)
+	{
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
+			return false;
+
+		struct stHandlingMod mod;
+		mod.bval = value;
+		mod.type = TYPE_BYTE;
+		return __AddModelHandlingMod(modelid, attrib, mod);
+	}
+
+	/* GET */
 
 	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float &ret)
 	{
@@ -333,7 +358,10 @@ namespace HandlingMgr
 	{
 		if (!bInitialized || !IsValidVehicle(vehicleid))
 			return false;
-		CHECK_TYPE(attrib, TYPE_UINT)
+		CHandlingAttribType type = GetHandlingAttribType(attrib);
+		
+		if (!(type == TYPE_UINT || type == TYPE_FLAG))
+			return false;
 
 		ret = *(unsigned int*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
 		return true;
@@ -346,6 +374,39 @@ namespace HandlingMgr
 		CHECK_TYPE(attrib, TYPE_BYTE)
 
 		ret = *(uint8_t*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
+		return true;
+	}
+
+	bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret)
+	{
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
+			return false;
+		CHECK_TYPE(attrib, TYPE_FLOAT)
+
+		ret = *(float*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
+		return true;
+	}
+
+	bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret)
+	{
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
+			return false;
+
+		CHandlingAttribType type = GetHandlingAttribType(attrib);
+		if (!(type == TYPE_UINT || type == TYPE_FLAG))
+			return false;
+
+		ret = *(unsigned int*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
+		return true;
+	}
+
+	bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret)
+	{
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
+			return false;
+		CHECK_TYPE(attrib, TYPE_BYTE)
+
+		ret = *(uint8_t*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
 		return true;
 	}
 }

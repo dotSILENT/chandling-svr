@@ -3,6 +3,14 @@
 #include "HandlingEnum.h"
 #include "HandlingManager.h"
 #include <cstring>
+#include "sampgdk/sampgdk.h"
+
+#define CHECK_PARAMS(m, n) \
+	if (params[0] != (m * 4)) \
+				{ \
+		logprintf("[chandling] %s: Expecting %d parameter(s), but found %d", n, m, params[0] / 4); \
+		return 0; \
+			}
 
 using sampgdk::logprintf;
 
@@ -85,12 +93,16 @@ namespace Natives
 		{ "IsPlayerUsingCHandling", n_IsPlayerUsingCHandling },
 		{ "ResetModelHandling", n_ResetModelHandling },
 		{ "ResetVehicleHandling", n_ResetVehicleHandling },
+
 		{ "SetVehicleHandlingFloat", n_SetVehicleHandlingFloat },
 		{ "SetVehicleHandlingInt", n_SetVehicleHandlingInt },
-		//{ "SetVehicleHandlingByte", n_SetVehicleHandlingByte },
+		{ "SetModelHandlingFloat", n_SetModelHandlingFloat },
+		{ "SetModelHandlingInt", n_SetModelHandlingInt },
+
 		{ "GetVehicleHandlingFloat", n_GetVehicleHandlingFloat },
 		{ "GetVehicleHandlingInt", n_GetVehicleHandlingInt },
-		//{ "GetVehicleHandlingByte", n_GetVehicleHandlingByte },
+		{ "GetModelHandlingFloat", n_GetModelHandlingFloat },
+		{ "GetModelHandlingInt", n_GetModelHandlingInt },
 		{ 0, 0 }
 	};
 
@@ -145,13 +157,24 @@ namespace Natives
 		return (cell)HandlingMgr::SetVehicleHandling((uint16_t)params[1], attrib, (unsigned int)params[3]);
 	}
 
-	/*PAWN_NATIVE(n_SetVehicleHandlingByte)
+	PAWN_NATIVE(n_SetModelHandlingFloat)
 	{
-		CHECK_PARAMS(3, "SetVehicleHandlingInt")
+		CHECK_PARAMS(3, "SetModelHandlingFloat")
 
-		return (cell)HandlingMgr::SetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], (uint8_t)params[3]);
-	}*/
+		return (cell)HandlingMgr::SetModelHandling((uint16_t)params[1], (CHandlingAttrib)params[2], amx_ctof(params[3]));
+	}
 
+	PAWN_NATIVE(n_SetModelHandlingInt)
+	{
+		CHECK_PARAMS(3, "SetModelHandlingInt")
+
+		CHandlingAttrib attrib = (CHandlingAttrib)params[2];
+
+		if (GetHandlingAttribType(attrib) == TYPE_BYTE)
+			return (cell)HandlingMgr::SetModelHandling((uint16_t)params[1], attrib, (uint8_t)params[3]);
+
+		return (cell)HandlingMgr::SetModelHandling((uint16_t)params[1], attrib, (unsigned int)params[3]);
+	}
 
 	PAWN_NATIVE(n_GetVehicleHandlingFloat)
 	{
@@ -190,14 +213,44 @@ namespace Natives
 		return (cell)ret;
 	}
 
-	/*PAWN_NATIVE(n_GetVehicleHandlingByte)
+	
+	PAWN_NATIVE(n_GetModelHandlingFloat)
 	{
-		uint8_t val = 0;
-		bool ret = HandlingMgr::GetVehicleHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+		CHECK_PARAMS(3, "GetModelHandlingFloat")
+
+		float val = 0.0;
+		bool ret = HandlingMgr::GetModelHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
 
 		cell* ref = NULL;
 		amx_GetAddr(amx, params[3], &ref);
-		*ref = (cell)val;
+		*ref = amx_ftoc(val);
 		return (cell)ret;
-	}*/
+	}
+
+	PAWN_NATIVE(n_GetModelHandlingInt)
+	{
+		CHECK_PARAMS(3, "GetModelHandlingInt")
+
+		bool ret = false;
+		cell* ref = NULL;
+		amx_GetAddr(amx, params[3], &ref);
+
+		if (GetHandlingAttribType((CHandlingAttrib)params[2]) == TYPE_BYTE)
+		{
+			uint8_t val = 0;
+			ret = HandlingMgr::GetModelHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+			*ref = (cell)val;
+		}
+		else
+		{
+			unsigned int val = 0;
+			ret = HandlingMgr::GetModelHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+
+			*ref = (cell)val;
+		}
+		return (cell)ret;
+	}
+
+	
+
 }

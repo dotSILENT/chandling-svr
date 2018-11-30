@@ -18,8 +18,15 @@ namespace HandlingMgr
 	bool	SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, unsigned int value);
 	bool	SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t value);
 
+	bool	SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float value);
+	bool	SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int value);
+	bool	SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t value);
+
 	bool	GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float &ret);
 	bool	GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, unsigned int &ret);
 	bool	GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t &ret);
-
+	
+	bool	GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret);
+	bool	GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret);
+	bool	GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret);
 }

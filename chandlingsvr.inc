@@ -79,5 +79,11 @@ native ResetVehicleHandling(vehicleid);
 native SetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, Float:value);
 native SetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, value);
 
+native SetModelHandlingFloat(modelid, CHandlingAttrib:attribute, Float:value);
+native SetModelHandlingInt(modelid, CHandlingAttrib:attribute, value);
+
 native GetVehicleHandlingFloat(vehicleid, CHandlingAttrib:attribute, &Float:result);
 native GetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, &result);
+
+native GetModelHandlingFloat(modelid, CHandlingAttrib:attribute, &Float:result);
+native GetModelHandlingInt(modelid, CHandlingAttrib:attribute, &result);
