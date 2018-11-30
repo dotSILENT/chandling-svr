@@ -29,6 +29,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL OnIncomingConnection(int playerid, const char* ip
 
 PLUGIN_EXPORT bool PLUGIN_CALL OnPlayerConnect(int playerid) {
 	//logprintf("[chandling] OnPlayerConnect");
+	if (bInitialized)
+		HandlingMgr::OnPlayerConnect(playerid);
 	return true;
 }
 

@@ -188,6 +188,7 @@ namespace HandlingMgr
 
 	void OnPlayerConnect(int playerid)
 	{
+		sampgdk::logprintf("connect %d has %d", playerid, gPlayers[playerid].hasCHandling());
 		if (!IS_VALID_PLAYERID(playerid) || !gPlayers[playerid].hasCHandling())
 			return;
 		
@@ -197,7 +198,7 @@ namespace HandlingMgr
 			{
 				struct CHandlingActionPacket p(ACTION_SET_MODEL_HANDLING);
 
-				p.data.Write((uint16_t)model + 400);
+				p.data.Write((uint16_t) (model + 400));
 
 				__WriteHandlingEntryToBitStream(&p.data, modelHandlings[model]);
 
@@ -323,7 +324,9 @@ namespace HandlingMgr
 	{
 		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib))
 			return false;
-		CHECK_TYPE(attrib, TYPE_UINT)
+		CHandlingAttribType type = GetHandlingAttribType(attrib);
+		if (!(type == TYPE_UINT || type == TYPE_FLAG))
+			return false;
 
 		struct stHandlingMod mod;
 		mod.uival = value;
