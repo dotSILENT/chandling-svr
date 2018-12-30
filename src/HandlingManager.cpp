@@ -172,7 +172,7 @@ namespace HandlingMgr
 	// call right after HandlingDefault::Initialize()
 	void InitializeModelHandlings()
 	{
-		for (int i = 0; i < MAX_VEHICLE_MODELS; i++)
+		for (uint16_t i = 0; i < MAX_VEHICLE_MODELS; i++)
 		{
 			HandlingDefault::copyDefaultModelHandling(i + 400, &modelHandlings[i].handlingData);
 		}
@@ -232,7 +232,7 @@ namespace HandlingMgr
 		
 		modelHandlings[model_index].handlingModMap.clear();
 
-		HandlingDefault::copyDefaultModelHandling(modelid, &modelHandlings[model_index].handlingData);
+		HandlingDefault::copyDefaultModelHandling((uint16_t)modelid, &modelHandlings[model_index].handlingData);
 
 		struct CHandlingActionPacket p(ACTION_RESET_MODEL);
 		p.data.Write((uint16_t)modelid);
@@ -345,71 +345,115 @@ namespace HandlingMgr
 		return __AddModelHandlingMod(modelid, attrib, mod);
 	}
 
-	/* GET */
+/* GET */
 
-	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float &ret)
-	{
-		if (!bInitialized || !IsValidVehicle(vehicleid))
-			return false;
-		CHECK_TYPE(attrib, TYPE_FLOAT)
+bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float &ret)
+{
+	if (!bInitialized || !IsValidVehicle(vehicleid))
+		return false;
+	CHECK_TYPE(attrib, TYPE_FLOAT)
 
 		ret = *(float*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
-		return true;
-	}
+	return true;
+}
 
-	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, unsigned int &ret)
-	{
-		if (!bInitialized || !IsValidVehicle(vehicleid))
-			return false;
-		CHandlingAttribType type = GetHandlingAttribType(attrib);
-		
-		if (!(type == TYPE_UINT || type == TYPE_FLAG))
-			return false;
+bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, unsigned int &ret)
+{
+	if (!bInitialized || !IsValidVehicle(vehicleid))
+		return false;
+	CHandlingAttribType type = GetHandlingAttribType(attrib);
 
-		ret = *(unsigned int*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
-		return true;
-	}
+	if (!(type == TYPE_UINT || type == TYPE_FLAG))
+		return false;
 
-	bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t &ret)
-	{
-		if (!bInitialized || !IsValidVehicle(vehicleid))
-			return false;
-		CHECK_TYPE(attrib, TYPE_BYTE)
+	ret = *(unsigned int*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
+	return true;
+}
+
+bool GetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t &ret)
+{
+	if (!bInitialized || !IsValidVehicle(vehicleid))
+		return false;
+	CHECK_TYPE(attrib, TYPE_BYTE)
 
 		ret = *(uint8_t*)GetHandlingAttribPtr(vehicleHandlings[vehicleid].usesModelHandling ? &vehicleHandlings[vehicleid].modelHandling->handlingData : &vehicleHandlings[vehicleid].handlingData, attrib);
-		return true;
-	}
+	return true;
+}
 
-	bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret)
-	{
-		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
-			return false;
-		CHECK_TYPE(attrib, TYPE_FLOAT)
+bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret)
+{
+	if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
+		return false;
+	CHECK_TYPE(attrib, TYPE_FLOAT)
 
 		ret = *(float*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
-		return true;
-	}
+	return true;
+}
 
-	bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret)
-	{
-		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
-			return false;
+bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret)
+{
+	if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
+		return false;
 
-		CHandlingAttribType type = GetHandlingAttribType(attrib);
-		if (!(type == TYPE_UINT || type == TYPE_FLAG))
-			return false;
+	CHandlingAttribType type = GetHandlingAttribType(attrib);
+	if (!(type == TYPE_UINT || type == TYPE_FLAG))
+		return false;
 
-		ret = *(unsigned int*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
-		return true;
-	}
+	ret = *(unsigned int*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
+	return true;
+}
 
-	bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret)
-	{
-		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
-			return false;
-		CHECK_TYPE(attrib, TYPE_BYTE)
+bool GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret)
+{
+	if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid))
+		return false;
+	CHECK_TYPE(attrib, TYPE_BYTE)
 
-		ret = *(uint8_t*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
-		return true;
-	}
+	ret = *(uint8_t*)GetHandlingAttribPtr(&modelHandlings[VEHICLE_MODEL_INDEX(modelid)].handlingData, attrib);
+	return true;
+}
+
+bool GetDefaultHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret)
+{
+	if (!IS_VALID_VEHICLE_MODEL(modelid))
+		return false;
+
+	CHECK_TYPE(attrib, TYPE_FLOAT)
+
+	struct tHandlingData* pHandl = HandlingDefault::getDefaultModelHandling(modelid);
+	if (pHandl == nullptr)
+		return false;
+	ret = *(float*)GetHandlingAttribPtr(pHandl, attrib);
+	return true;
+}
+
+bool GetDefaultHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret)
+{
+	if (!IS_VALID_VEHICLE_MODEL(modelid))
+		return false;
+
+	CHandlingAttribType type = GetHandlingAttribType(attrib);
+	if (!(type == TYPE_UINT || type == TYPE_FLAG))
+		return false;
+
+	struct tHandlingData* pHandl = HandlingDefault::getDefaultModelHandling(modelid);
+	if (pHandl == nullptr)
+		return false;
+	ret = *(unsigned int*)GetHandlingAttribPtr(pHandl, attrib);
+	return true;
+}
+
+bool GetDefaultHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret)
+{
+	if (!IS_VALID_VEHICLE_MODEL(modelid))
+		return false;
+
+	CHECK_TYPE(attrib, TYPE_BYTE)
+
+	struct tHandlingData* pHandl = HandlingDefault::getDefaultModelHandling(modelid);
+	if (pHandl == nullptr)
+		return false;
+	ret = *(uint8_t*)GetHandlingAttribPtr(pHandl, attrib);
+	return true; 
+}
 }

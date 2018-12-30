@@ -87,3 +87,6 @@ native GetVehicleHandlingInt(vehicleid, CHandlingAttrib:attribute, &result);
 
 native GetModelHandlingFloat(modelid, CHandlingAttrib:attribute, &Float:result);
 native GetModelHandlingInt(modelid, CHandlingAttrib:attribute, &result);
+
+native GetDefaultHandlingFloat(modelid, CHandlingAttrib:attribute, &Float:value);
+native GetDefaultHandlingInt(modelid, CHandlingAttrib:attribute, &value);

@@ -7,12 +7,19 @@ namespace HandlingDefault
 	static struct tHandlingData gDefaultModelHandlings[MAX_VEHICLE_MODELS];
 
 
-	bool copyDefaultModelHandling(int modelid, struct tHandlingData* dest)
+	bool copyDefaultModelHandling(uint16_t modelid, struct tHandlingData* dest)
 	{
 		if (!IS_VALID_VEHICLE_MODEL(modelid) || dest == nullptr)
 			return false;
 		memcpy(dest, &gDefaultModelHandlings[VEHICLE_MODEL_INDEX(modelid)], sizeof(struct tHandlingData));
 		return true;
+	}
+
+	struct tHandlingData* getDefaultModelHandling(uint16_t modelid)
+	{
+		if (!IS_VALID_VEHICLE_MODEL(modelid))
+			return nullptr;
+		return &gDefaultModelHandlings[VEHICLE_MODEL_INDEX(modelid)];
 	}
 		
 	void Initialize()

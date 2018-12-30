@@ -55,4 +55,9 @@ namespace Natives
 	PAWN_NATIVE(n_GetModelHandlingFloat);
 	// native GetModelHandlingInt(modelid, CHandlingAttrib:attribute, &value);
 	PAWN_NATIVE(n_GetModelHandlingInt);
+
+	// native GetDefaultHandlingFloat(modelid, CHandlingAttrib:attribute, &Float:value);
+	PAWN_NATIVE(n_GetDefaultHandlingFloat);
+	// native GetDefaultHandlingInt(modelid, CHandlingAttrib:attribute, &value);
+	PAWN_NATIVE(n_GetDefaultHandlingInt);
 }

@@ -7,7 +7,8 @@
 
 namespace HandlingDefault
 {
-	bool copyDefaultModelHandling(int modelid, struct tHandlingData* dest);
+	bool copyDefaultModelHandling(uint16_t modelid, struct tHandlingData* dest);
+	struct tHandlingData* getDefaultModelHandling(uint16_t modelid);
 
 	void Initialize();
 }

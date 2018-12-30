@@ -103,6 +103,9 @@ namespace Natives
 		{ "GetVehicleHandlingInt", n_GetVehicleHandlingInt },
 		{ "GetModelHandlingFloat", n_GetModelHandlingFloat },
 		{ "GetModelHandlingInt", n_GetModelHandlingInt },
+
+		{ "GetDefaultHandlingFloat", n_GetDefaultHandlingFloat },
+		{ "GetDefaultHandlingInt", n_GetDefaultHandlingInt },
 		{ 0, 0 }
 	};
 
@@ -185,6 +188,8 @@ namespace Natives
 
 		cell* ref = NULL;
 		amx_GetAddr(amx, params[3], &ref);
+		if (!ref)
+			return (cell)false;
 		*ref = amx_ftoc(val);
 		return (cell)ret;
 	}
@@ -196,6 +201,8 @@ namespace Natives
 		bool ret = false;
 		cell* ref = NULL;
 		amx_GetAddr(amx, params[3], &ref);
+		if (!ref)
+			return (cell)false;
 
 		if (GetHandlingAttribType((CHandlingAttrib)params[2]) == TYPE_BYTE)
 		{
@@ -223,6 +230,8 @@ namespace Natives
 
 		cell* ref = NULL;
 		amx_GetAddr(amx, params[3], &ref);
+		if (!ref)
+			return (cell)false;
 		*ref = amx_ftoc(val);
 		return (cell)ret;
 	}
@@ -234,6 +243,8 @@ namespace Natives
 		bool ret = false;
 		cell* ref = NULL;
 		amx_GetAddr(amx, params[3], &ref);
+		if (!ref)
+			return (cell)false;
 
 		if (GetHandlingAttribType((CHandlingAttrib)params[2]) == TYPE_BYTE)
 		{
@@ -251,6 +262,44 @@ namespace Natives
 		return (cell)ret;
 	}
 
-	
+	PAWN_NATIVE(n_GetDefaultHandlingFloat)
+	{
+		CHECK_PARAMS(3, "GetDefaultHandlingFloat")
 
+		cell* ref = NULL;
+		amx_GetAddr(amx, params[3], &ref);
+		if (!ref)
+			return (cell)false;
+
+		float val = 0.0;
+		bool ret = HandlingMgr::GetDefaultHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+
+		*ref = amx_ftoc(val);
+		return (cell)ret;
+	}
+
+	PAWN_NATIVE(n_GetDefaultHandlingInt)
+	{
+		CHECK_PARAMS(3, "GetDefaultHandlingInt")
+
+		bool ret = false;
+		cell* ref = NULL;
+		amx_GetAddr(amx, params[3], &ref);
+		if (!ref)
+			return (cell)false;
+
+		if (GetHandlingAttribType((CHandlingAttrib)params[2]) == TYPE_BYTE)
+		{
+			uint8_t val = 0;
+			ret = HandlingMgr::GetModelHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+			*ref = (cell)val;
+		}
+		else
+		{
+			unsigned int val = 0;
+			ret = HandlingMgr::GetModelHandling((uint16_t)params[1], (CHandlingAttrib)params[2], val);
+			*ref = (cell)val;
+		}
+		return (cell)ret;
+	}
 }

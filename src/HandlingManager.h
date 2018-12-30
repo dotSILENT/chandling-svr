@@ -29,4 +29,8 @@ namespace HandlingMgr
 	bool	GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret);
 	bool	GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret);
 	bool	GetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret);
+
+	bool	GetDefaultHandling(uint16_t modelid, CHandlingAttrib attrib, float &ret);
+	bool	GetDefaultHandling(uint16_t modelid, CHandlingAttrib attrib, unsigned int &ret);
+	bool	GetDefaultHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t &ret);
 }
