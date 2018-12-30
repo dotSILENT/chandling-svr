@@ -59,6 +59,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 	pAMXFunctions = ppData[PLUGIN_DATA_AMX_EXPORTS];
 
 	bool ret = sampgdk::Load(ppData);
+
+	Hooks::PreHooking();
 	Hooks::InstallNativeRedirects(pAMXFunctions);
 	return ret;
 }

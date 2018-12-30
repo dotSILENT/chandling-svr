@@ -78,17 +78,26 @@ int AMXAPI HOOK_amx_Register(AMX *amx, AMX_NATIVE_INFO *nativelist, int number)
 
 
 namespace Hooks
-{
-	/* this needs to be called from AmxLoad when rakserver already exists */
-	bool InstallHooks()
+{ 
+	/* This needs to be called from Load before InstallHooks is called */
+	void PreHooking()
 	{
+		/*
+			We do it this way, so GetPacketID's pattern isn't changed right after loading the plugin
+			That would make it impossible for other plugins to use FindPattern again, because a JMP instruction is placed at the first 5 bytes
+			This way we find the function right after the plugin is loaded (Load()) and hook it when the gamemode is being loaded (AmxLoad())
+		*/
 #ifdef _WIN32
 		FUNC_GetPacketID = FindPattern("\x8B\x44\x24\x04\x85\xC0\x75\x03\x0C\xFF\xC3", "xxxxxxx???x");
 #else
 		FUNC_GetPacketID = FindPattern("\x55\xB8\x00\x00\x00\x00\x89\xE5\x8B\x55\x00\x85\xD2", "xx????xxxx?xx");
 #endif
+	}
 
-		if (FUNC_GetPacketID == 0)
+	/* this needs to be called from AmxLoad when rakserver already exists */
+	bool InstallHooks()
+	{
+		if (FUNC_GetPacketID == NULL)
 			return false;
 
 		shGetPacketID.Install((void*)FUNC_GetPacketID, (void*)hookedGetPacketID);
