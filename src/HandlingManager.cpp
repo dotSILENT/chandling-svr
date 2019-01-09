@@ -12,10 +12,10 @@
 
 #define CHECK_TYPE(attribute,type) \
 	if(GetHandlingAttribType(attrib) != type) \
-		{\
+	{\
 		sampgdk::logprintf("[chandling] Invalid type (%d) specified for attribute %d", type, attrib);\
 		return false;\
-		}
+	}
 
 namespace HandlingMgr
 {
@@ -289,7 +289,10 @@ namespace HandlingMgr
 	{
 		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib)) // no validation checking for unsigned integers
 			return false;	
-		CHECK_TYPE(attrib, TYPE_UINT)
+
+		CHandlingAttribType type = GetHandlingAttribType(attrib);
+		if (!(type == TYPE_UINT || type == TYPE_FLAG))
+			return false;
 
 		struct stHandlingMod mod;
 		mod.uival = value;
