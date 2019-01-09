@@ -274,9 +274,12 @@ namespace HandlingMgr
 
 	bool SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, float value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
 			return false;
-		//CHECK_TYPE(attrib, TYPE_FLOAT) // IsValidHandlingValue takes care of this
+		CHECK_TYPE(attrib, TYPE_FLOAT)
+
+		if (!IsValidHandlingValue(attrib, value))
+			return false;
 
 		struct stHandlingMod mod;
 		mod.fval = value;
@@ -302,9 +305,12 @@ namespace HandlingMgr
 
 	bool SetVehicleHandling(uint16_t vehicleid, CHandlingAttrib attrib, uint8_t value)
 	{
-		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
+		if (!bInitialized || !IsValidVehicle(vehicleid) || !CanSetHandlingAttrib(attrib))
 			return false;
-		//CHECK_TYPE(attrib, TYPE_BYTE) // IsValidHandlingValue takes care of this
+		CHECK_TYPE(attrib, TYPE_BYTE)
+
+		if (!IsValidHandlingValue(attrib, value))
+			return false;
 
 		struct stHandlingMod mod;
 		mod.bval = value;
@@ -314,7 +320,12 @@ namespace HandlingMgr
 
 	bool SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, float value)
 	{
-		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib))
+			return false;
+
+		CHECK_TYPE(attrib, TYPE_FLOAT)
+
+		if (!IsValidHandlingValue(attrib, value))
 			return false;
 
 		struct stHandlingMod mod;
@@ -339,7 +350,12 @@ namespace HandlingMgr
 
 	bool SetModelHandling(uint16_t modelid, CHandlingAttrib attrib, uint8_t value)
 	{
-		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib) || !IsValidHandlingValue(attrib, value))
+		if (!bInitialized || !IS_VALID_VEHICLE_MODEL(modelid) || !CanSetHandlingAttrib(attrib))
+			return false;
+
+		CHECK_TYPE(attrib, TYPE_BYTE)
+
+		if (!IsValidHandlingValue(attrib, value))
 			return false;
 
 		struct stHandlingMod mod;

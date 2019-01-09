@@ -6,6 +6,7 @@ CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute)
 	switch (attribute)
 	{
 	case HANDL_FMASS:
+	case HANDL_FTURNMASS:
 	case HANDL_FDRAGMULTIPLIER:
 	case HANDL_CENTREOFMASS_X:
 	case HANDL_CENTREOFMASS_Y:
