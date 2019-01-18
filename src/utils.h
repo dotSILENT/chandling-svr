@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <Psapi.h>
 #else
-typedef char BYTE;
+typedef unsigned char BYTE;
 #define NULL 0
 #endif
 
@@ -23,7 +23,7 @@ bool memory_compare(const BYTE *data, const BYTE *pattern, const char *mask)
 	return (*mask) == NULL;
 }
 
-unsigned long FindPattern(char *pattern, char *mask)
+unsigned long FindPattern(const char *pattern, const char *mask)
 {
 	unsigned long i;
 	unsigned long size;

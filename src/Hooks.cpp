@@ -1,4 +1,3 @@
-#pragma once
 #include "Hooks.h"
 #include "utils.h"
 #include "sampgdk/sampgdk.h"
@@ -9,8 +8,13 @@
 #include "Natives.h"
 #include <cstdint>
 
+#ifndef _WIN32
+typedef uint8_t BYTE;
+typedef unsigned long DWORD;
+#define __cdecl __attribute__((cdecl))
+#endif
 
-DWORD FUNC_GetPacketID = NULL;
+DWORD FUNC_GetPacketID = 0; //NULL;
 
 /*
 * amx_Register hook was taken from YSF
@@ -97,7 +101,7 @@ namespace Hooks
 	/* this needs to be called from AmxLoad when rakserver already exists */
 	bool InstallHooks()
 	{
-		if (FUNC_GetPacketID == NULL)
+		if (FUNC_GetPacketID == 0)
 			return false;
 
 		shGetPacketID.Install((void*)FUNC_GetPacketID, (void*)hookedGetPacketID);

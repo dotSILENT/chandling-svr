@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-enum CHandlingAttrib
+enum CHandlingAttrib : uint8_t
 {
 	HANDL_UIDENTIFIER = 1, // A
 	HANDL_FMASS,	// B

@@ -7,6 +7,7 @@ set(LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
 
 include_directories(
   ${SAMPSDK_DIR}
+  ${SAMPSDK_DIR}/amx
   ${LIB_DIR}
   ${SRC_DIR}
 )
@@ -59,6 +60,12 @@ add_samp_plugin(chandlingsvr
   chandlingsvr.cpp
   chandlingsvr.h
 )
+
+if(NOT WIN32)
+	# undefined symbol clock_gettime
+	target_link_libraries(${PROJECT_NAME} rt)
+endif()
+
 
 source_group("lib\\sampgdk" FILES ${LIB_SAMPGDK})
 source_group("lib\\subhook" FILES ${LIB_SUBHOOK})

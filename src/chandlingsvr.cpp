@@ -62,6 +62,8 @@ PLUGIN_EXPORT bool PLUGIN_CALL Load(void **ppData) {
 
 	Hooks::PreHooking();
 	Hooks::InstallNativeRedirects(pAMXFunctions);
+
+	logprintf("[###] CHandlingSvr " CHANDLING_VERSION " by .silent loaded [###]");
 	return ret;
 }
 

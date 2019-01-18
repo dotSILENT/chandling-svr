@@ -1,5 +1,7 @@
 #include "raknet/raknet.h"
 
+#define CHANDLING_VERSION "v1.0-dev"
+
 #define MAX_VEHICLE_MODELS (212)
 #ifndef MAX_VEHICLES
 #define MAX_VEHICLES (2000)

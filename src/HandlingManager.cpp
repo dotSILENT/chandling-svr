@@ -9,6 +9,7 @@
 
 #include <unordered_map>
 #include <unordered_set>
+#include <cstring>
 
 #define CHECK_TYPE(attribute,type) \
 	if(GetHandlingAttribType(attrib) != type) \
@@ -33,7 +34,7 @@ namespace HandlingMgr
 	struct stHandlingEntry
 	{
 		struct tHandlingData	handlingData;
-		std::unordered_map<CHandlingAttrib, struct stHandlingMod>	handlingModMap; // modifications are saved here so we only send things that have changed
+		std::unordered_map<CHandlingAttrib, struct stHandlingMod, std::hash<uint8_t>>	handlingModMap; // modifications are saved here so we only send things that have changed
 	};
 
 	struct stVehicleHandlingEntry : stHandlingEntry
