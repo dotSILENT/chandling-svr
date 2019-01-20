@@ -38,6 +38,7 @@ CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute)
 	case HANDL_TR_NDRIVETYPE:
 	case HANDL_TR_NENGINETYPE:
 	case HANDL_TR_NNUMBEROFGEARS:
+	case HANDL_BABS:
 		return TYPE_BYTE;
 
 	case HANDL_UIDENTIFIER:
@@ -213,7 +214,9 @@ void* GetHandlingAttribPtr(struct tHandlingData *handling, CHandlingAttrib attri
 		return &handling->m_transmissionData.m_nEngineType;
 	case HANDL_TR_NNUMBEROFGEARS:
 		return &handling->m_transmissionData.m_nNumberOfGears;
-
+	case HANDL_BABS:
+		return &handling->m_bABS;
+		
 	case HANDL_UIDENTIFIER:
 		return &handling->m_iIndex;
 	case HANDL_UIMONETARYVALUE:
