@@ -152,6 +152,8 @@ void* GetHandlingAttribPtr(struct tHandlingData *handling, CHandlingAttrib attri
 	{
 	case HANDL_FMASS:
 		return &handling->m_fMass;
+	case HANDL_FTURNMASS:
+		return &handling->m_fTurnMass;
 	case HANDL_FDRAGMULTIPLIER:
 		return &handling->m_fDragMult;
 	case HANDL_CENTREOFMASS_X:
