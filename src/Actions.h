@@ -1,13 +1,14 @@
 #pragma once
 
 #include "raknet/BitStream.h"
-#include "sampgdk/sampgdk.h"
 #include "PacketEnum.h"
+#include <cstdint>
 
 // action identifier is sent as single byte
 enum CHandlingAction : unsigned char
 {
 	ACTION_INIT = 10, // This is the only packet that is sent  by the player, to indicate that we can speak to him
+	ACTION_INIT_RESPONSE,
 
 	ACTION_RESET_MODEL = 15,
 	ACTION_RESET_VEHICLE,
