@@ -5,7 +5,7 @@ This is a SA:MP server plugin allowing server control of vehicle handlings by co
 
 Handlings can also be applied per-vehicle, which is not the default behaviour of GTA.
 
-Head over to the [Wiki](https://github.com/dotSILENT/chandling-svr/Wiki) for a list of natives, descriptions and examples.
+Head over to the [Wiki](https://github.com/dotSILENT/chandling-svr/wiki) for a list of natives, descriptions and examples.
 
 
 ## Installation
