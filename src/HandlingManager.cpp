@@ -189,7 +189,6 @@ namespace HandlingMgr
 
 	void OnPlayerConnect(int playerid)
 	{
-		sampgdk::logprintf("connect %d has %d", playerid, gPlayers[playerid].hasCHandling());
 		if (!IS_VALID_PLAYERID(playerid) || !gPlayers[playerid].hasCHandling())
 			return;
 		
