@@ -8,7 +8,6 @@
 #include "Natives.h"
 #include "HandlingManager.h"
 #include "HandlingDefault.h"
-#include "HandlingEnum.h"
 
 extern void *pAMXFunctions;
 void **ppPluginData = nullptr;

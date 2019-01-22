@@ -88,13 +88,19 @@ namespace Hooks
 	{
 		/*
 			We do it this way, so GetPacketID's pattern isn't changed right after loading the plugin
-			That would make it impossible for other plugins to use FindPattern again, because a JMP instruction is placed at the first 5 bytes
-			This way we find the function right after the plugin is loaded (Load()) and hook it when the gamemode is being loaded (AmxLoad())
+			That would make it impossible for other plugins to use FindPattern again, because a JMP instruction is placed at the beginning
+			This way we find the function right after the plugin is loaded (Load()) but hook it later, when the gamemode is being loaded (AmxLoad())
 		*/
 #ifdef _WIN32
 		FUNC_GetPacketID = FindPattern("\x8B\x44\x24\x04\x85\xC0\x75\x03\x0C\xFF\xC3", "xxxxxxx???x");
+		// Pattern not found, is it hooked already? Search for an extended pattern starting with a JMP. This shouldn't really happen.
+		if (!FUNC_GetPacketID)
+			FUNC_GetPacketID = FindPattern("\xE9\x00\x00\x00\x00\xC0\x75\x03\x0C\xFF\xC3\x8B\x48\x10\x8A\x01\x3C", "x?????x???xxxxxxx");
 #else
 		FUNC_GetPacketID = FindPattern("\x55\xB8\x00\x00\x00\x00\x89\xE5\x8B\x55\x00\x85\xD2", "xx????xxxx?xx");
+		// Same as above
+		if (!FUNC_GetPacketID)
+			FUNC_GetPacketID = FindPattern("\xE9\x00\x00\x00\x00\x00\x89\xE5\x8B\x55\x00\x85\xD2\x74\x00\x8B\x52\x00\x0F", "x?????xxxx?xxx?xx?x");
 #endif
 	}
 
