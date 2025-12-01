@@ -42,7 +42,7 @@ enum CHandlingAttrib : uint8_t
 };
 
 /* uncomment in pawn
-enum CHandlingLights : unsigned char 
+enum CHandlingLights : unsigned char
 {
 	LIGHTS_LONG,
 	LIGHTS_SMALL,
@@ -59,7 +59,7 @@ enum CHandlingAttribType
 	TYPE_FLAG
 };
 
-CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute);
+CHandlingAttribType GetHandlingAttributeType(CHandlingAttrib attribute);
 bool CanSetHandlingAttrib(CHandlingAttrib attribute);
 
 bool IsValidHandlingValue(CHandlingAttrib attribute, float value);

@@ -1,7 +1,7 @@
 #include "HandlingEnum.h"
 #include "HandlingStruct.h"
 
-CHandlingAttribType GetHandlingAttribType(CHandlingAttrib attribute)
+CHandlingAttribType GetHandlingAttributeType(CHandlingAttrib attribute)
 {
 	switch (attribute)
 	{
@@ -67,7 +67,7 @@ bool CanSetHandlingAttrib(CHandlingAttrib attribute)
 
 bool IsValidHandlingValue(CHandlingAttrib attribute, float value)
 {
-	if (GetHandlingAttribType(attribute) != TYPE_FLOAT)
+	if (GetHandlingAttributeType(attribute) != TYPE_FLOAT)
 		return false;
 
 	switch (attribute)
@@ -122,7 +122,7 @@ bool IsValidHandlingValue(CHandlingAttrib attribute, float value)
 
 bool IsValidHandlingValue(CHandlingAttrib attribute, uint8_t value)
 {
-	if (GetHandlingAttribType(attribute) != TYPE_BYTE)
+	if (GetHandlingAttributeType(attribute) != TYPE_BYTE)
 		return false;
 
 	switch (attribute)
@@ -216,7 +216,7 @@ void* GetHandlingAttribPtr(struct tHandlingData *handling, CHandlingAttrib attri
 		return &handling->m_transmissionData.m_nNumberOfGears;
 	case HANDL_BABS:
 		return &handling->m_bABS;
-		
+
 	case HANDL_UIDENTIFIER:
 		return &handling->m_iIndex;
 	case HANDL_UIMONETARYVALUE:
@@ -226,7 +226,7 @@ void* GetHandlingAttribPtr(struct tHandlingData *handling, CHandlingAttrib attri
 		return &handling->m_nHandlingFlags;
 	case HANDL_MODELFLAGS:
 		return &handling->m_nModelFlags;
-		
+
 	}
 	return  nullptr;
 }

@@ -1,6 +1,8 @@
 #pragma once
 
-#include "raknet/BitStream.h"
+#include <RakNet/bitstream.hpp>
+#include <sdk.hpp>
+#include <Server/Components/Pawn/pawn.hpp>
 #include "PacketEnum.h"
 #include <cstdint>
 
@@ -18,16 +20,16 @@ enum CHandlingAction : unsigned char
 
 struct CHandlingActionPacket
 {
-	RakNet::BitStream data;
+	NetworkBitStream data;
 
 	CHandlingActionPacket(CHandlingAction actionID)
 	{
-		data.Write((uint8_t)ID_CHANDLING);
+		data.Write((uint8_t)CHandlingPacketID::ID_CHANDLING);
 		data.Write((uint8_t)actionID);
 	}
 };
 
 namespace Actions
 {
-	bool Process(CHandlingAction id, RakNet::BitStream *bs, int playerid);
+	bool Process(CHandlingAction id, NetworkBitStream &bs, IPlayer &player);
 }

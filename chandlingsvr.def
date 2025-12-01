@@ -5,6 +5,5 @@ EXPORTS
 	AmxLoad
 	AmxUnload
 	ProcessTick
-	OnPlayerConnect
-	OnVehicleStreamIn
-	OnIncomingConnection
+	onPlayerConnect
+	onVehicleStreamIn

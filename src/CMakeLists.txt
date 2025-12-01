@@ -1,51 +1,13 @@
 include(AMXConfig)
 include(AddSAMPPlugin)
 
-set(SAMPSDK_DIR "${PROJECT_SOURCE_DIR}/lib/samp-plugin-sdk")
-set(SRC_DIR "${PROJECT_SOURCE_DIR}/src")
-set(LIB_DIR "${PROJECT_SOURCE_DIR}/lib")
+include_directories("${PROJECT_SOURCE_DIR}/src")
 
-include_directories(
-  ${SAMPSDK_DIR}
-  ${SAMPSDK_DIR}/amx
-  ${LIB_DIR}
-  ${SRC_DIR}
-)
-
-set(LIB_SAMPGDK
-  "${LIB_DIR}/sampgdk/sampgdk.h"
-  "${LIB_DIR}/sampgdk/sampgdk.c"
-)
-
-set(LIB_RAKNET
-  "${LIB_DIR}/raknet/raknet.h"
-  "${LIB_DIR}/raknet/BitStream.h"
-  "${LIB_DIR}/raknet/BitStream.cpp"
-)
- 
-set(LIB_SUBHOOK
-  "${LIB_DIR}/subhook/subhook.h"
-  "${LIB_DIR}/subhook/subhook.c"
-)
-
-SET(LIB_SAMPSDK
-  "${SAMPSDK_DIR}/plugincommon.h"
-  "${SAMPSDK_DIR}/amx/amx.h"
-  "${SAMPSDK_DIR}/amxplugin.cpp"
-)
-
-add_samp_plugin(chandlingsvr
-  ${PROJECT_SOURCE_DIR}/chandlingsvr.def
-  ${LIB_SAMPSDK}
-  ${LIB_SAMPGDK}
-  ${LIB_RAKNET}
-  ${LIB_SUBHOOK}
+add_samp_plugin(${PROJECT_NAME}
   CPlayer.cpp
   CPlayer.h
-  Natives.cpp
-  Natives.h
-  Hooks.cpp
-  Hooks.h
+  Natives.hpp
+  Hooks.hpp
   Actions.cpp
   Actions.h
   HandlingEnum.cpp
@@ -55,7 +17,6 @@ add_samp_plugin(chandlingsvr
   HandlingDefault.cpp
   HandlingDefault.h
   HandlingStruct.h
-  utils.h
   PacketEnum.h
   chandlingsvr.cpp
   chandlingsvr.h
@@ -66,8 +27,5 @@ if(NOT WIN32)
 	target_link_libraries(${PROJECT_NAME} rt)
 endif()
 
-
-source_group("lib\\sampgdk" FILES ${LIB_SAMPGDK})
-source_group("lib\\subhook" FILES ${LIB_SUBHOOK})
-source_group("lib\\raknet" FILES ${LIB_RAKNET})
-source_group("lib\\samp-plugin-sdk" FILES ${LIB_SAMPSDK})
+target_link_libraries(${PROJECT_NAME} PUBLIC OMP-SDK)
+target_include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/lib)
